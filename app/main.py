@@ -20,7 +20,7 @@ app = FastAPI(
         "Supports MiniRocket+Ridge, 13-layer CNN-LSTM, PhysioNet EEGMMIDB preprocessing, "
         "real-time streaming playback, and comprehensive benchmarking."
     ),
-    version="1.0.0",
+    version="2.0.0",
 )
 
 # Enable CORS for http://localhost:5173 (Vite frontend) and standard local origins
@@ -59,7 +59,7 @@ async def root():
     """Health check endpoint."""
     return {
         "system": "NeuroMove EEG Classification Backend",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "status": "online",
         "paper": "Hwaidi & Ghanem (NeuroImage 328, 2026)",
         "endpoints": [

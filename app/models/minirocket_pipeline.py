@@ -403,11 +403,16 @@ class MiniRocketPipeline:
             path,
         )
 
-    def load(self, filepath: Union[str, Path]) -> "MiniRocketPipeline":
-        """Load persisted model pipeline from disk."""
+    def load(self, filepath: Optional[Union[str, Path]] = None) -> "MiniRocketPipeline":
+        """Load persisted model pipeline from disk. Supports both instance and class calls."""
         if isinstance(self, type):
             instance = self()
             return instance.load(filepath)
+        if filepath is None and isinstance(self, (str, Path)):
+            instance = MiniRocketPipeline()
+            return instance.load(self)
+        if filepath is None:
+            raise ValueError("filepath must be provided.")
 
         path = Path(filepath)
         if not path.exists():

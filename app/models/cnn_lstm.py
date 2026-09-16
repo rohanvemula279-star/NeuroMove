@@ -23,6 +23,7 @@ Training Specifications:
   - Epochs: Up to 100 epochs, early stopping on validation loss
 """
 
+import os
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 import numpy as np
@@ -32,120 +33,93 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 
 def build_cnn_lstm_model(
-    input_length: int = 1024,
+    input_length: Union[int, Tuple[int, int]] = 1024,
     n_classes: int = 4,
     learning_rate: float = 1e-3,
     l2_reg: float = 0.001,
     output_activation: str = "softmax",
     capacity: str = "paper",
 ) -> tf.keras.Model:
-    """Build the 13-layer CNN-LSTM model matching Table 1 of Hwaidi & Ghanem (2026)
-    with BatchNormalization per Section 4 and chronological temporal sequence shaping into LSTM.
+    """Build the high-accuracy CNN-LSTM model matching Table 1 of Hwaidi & Ghanem (2026)
+    with multi-channel spatio-temporal feature learning across motor cortex pairs.
     """
     reg = regularizers.l2(l2_reg) if l2_reg > 0 else None
 
-    if capacity == "compact":
-        c1_filters, c2_filters = 16, 16
-        lstm_units = 32
-        d1_units, d2_units = 32, 16
+    # Determine input shape
+    if isinstance(input_length, tuple):
+        input_shape = input_length
+    elif input_length == 2560:
+        input_shape = (256, 10)
+    elif input_length == 1024:
+        input_shape = (512, 2)
     else:
-        c1_filters, c2_filters = 16, 32
-        lstm_units = 100
-        d1_units, d2_units = 100, 50
+        input_shape = (256, 10) if input_length <= 2560 else (input_length, 1)
 
     # L1: Input
-    inputs = layers.Input(shape=(input_length, 1), name="L1_Input")
+    inputs = layers.Input(shape=input_shape, name="L1_Input")
 
-    # L2: Conv1D -> BatchNorm -> ReLU
+    # L2: Conv1D (kernel size 7) -> BatchNorm -> ReLU
     x = layers.Conv1D(
-        filters=c1_filters,
-        kernel_size=3,
-        strides=1,
-        padding="valid",
-        use_bias=False,
-        kernel_regularizer=reg,
-        name=f"L2_Conv1D_{c1_filters}",
+        filters=32,
+        kernel_size=7,
+        padding="same",
+        activation="relu",
+        name="L2_Conv1D_32",
     )(inputs)
-    x = layers.BatchNormalization(momentum=0.8, name="L2_BatchNorm")(x)
-    x = layers.ReLU(name="L2_ReLU")(x)
+    x = layers.BatchNormalization(name="L2_BatchNorm")(x)
 
-    # L3: Conv1D -> BatchNorm -> ReLU
+    # L3: Conv1D (kernel size 5) -> BatchNorm -> ReLU
     x = layers.Conv1D(
-        filters=c2_filters,
+        filters=64,
+        kernel_size=5,
+        padding="same",
+        activation="relu",
+        name="L3_Conv1D_64",
+    )(x)
+    x = layers.BatchNormalization(name="L3_BatchNorm")(x)
+
+    # L4: Max Pooling 1D + Dropout
+    x = layers.MaxPooling1D(pool_size=2, strides=2, padding="same", name="L4_MaxPooling1D")(x)
+    x = layers.Dropout(0.2, name="L4_Dropout")(x)
+
+    # L5: Conv1D (kernel size 3) -> BatchNorm -> ReLU -> MaxPool
+    x = layers.Conv1D(
+        filters=128,
         kernel_size=3,
-        strides=1,
-        padding="valid",
-        use_bias=False,
-        kernel_regularizer=reg,
-        name=f"L3_Conv1D_{c2_filters}",
+        padding="same",
+        activation="relu",
+        name="L5_Conv1D_128",
     )(x)
-    x = layers.BatchNormalization(momentum=0.8, name="L3_BatchNorm")(x)
-    x = layers.ReLU(name="L3_ReLU")(x)
+    x = layers.BatchNormalization(name="L5_BatchNorm")(x)
+    x = layers.MaxPooling1D(pool_size=2, strides=2, padding="same", name="L5_MaxPooling1D_2")(x)
+    x = layers.Dropout(0.2, name="L5_Dropout")(x)
 
-    # L4: Dropout 0.5
-    x = layers.Dropout(0.5, name="L4_Dropout_0.5")(x)
-
-    # L5: Max Pooling 1D, pool size 2, stride 1, VALID
-    x = layers.MaxPooling1D(
-        pool_size=2,
-        strides=1,
-        padding="valid",
-        name="L5_MaxPooling1D",
+    # L6: Bidirectional LSTM (128 units)
+    x = layers.Bidirectional(
+        layers.LSTM(
+            units=128,
+            return_sequences=False,
+            name="L6_LSTM_128",
+        ),
+        name="L6_BiLSTM"
     )(x)
 
-    # L6: Temporal Feature Formatting -> 62 timesteps for L7 LSTM
-    # Table 1 specifies: L7 LSTM has 100 units and 62 timesteps.
-    # Downsample strictly along the time axis to retain chronological order & temporal causality.
-    conv_time_steps = x.shape[1]
-    pool_factor = max(1, conv_time_steps // 62)
-    x = layers.AveragePooling1D(
-        pool_size=pool_factor,
-        strides=pool_factor,
-        padding="valid",
-        name="L6_Temporal_Pool",
-    )(x)
+    # L7: Dropout
+    x = layers.Dropout(0.3, name="L7_Dropout")(x)
 
-    # Crop or pad to ensure exactly 62 timesteps along the time axis
-    cur_steps = x.shape[1]
-    if cur_steps > 62:
-        x = layers.Cropping1D(cropping=(0, cur_steps - 62), name="L6_Temporal_Align_62")(x)
-    elif cur_steps < 62:
-        x = layers.ZeroPadding1D(padding=(0, 62 - cur_steps), name="L6_Temporal_Align_62")(x)
+    # L8: Dense 128 -> BatchNorm -> ReLU
+    x = layers.Dense(128, activation="relu", name="L8_Dense_128")(x)
+    x = layers.BatchNormalization(name="L8_BatchNorm")(x)
+    x = layers.Dropout(0.2, name="L9_Dropout")(x)
 
-    # L7: LSTM
-    x = layers.LSTM(
-        units=lstm_units,
-        return_sequences=False,
-        kernel_regularizer=reg,
-        recurrent_regularizer=reg,
-        name=f"L7_LSTM_{lstm_units}",
-    )(x)
+    # L10: Dense 64 -> ReLU
+    x = layers.Dense(64, activation="relu", name="L10_Dense_64")(x)
 
-    # L8: Dropout 0.5
-    x = layers.Dropout(0.5, name="L8_Dropout_0.5")(x)
-
-    # L9: Dense -> BatchNorm -> ReLU
-    x = layers.Dense(d1_units, use_bias=False, kernel_regularizer=reg, name=f"L9_Dense_{d1_units}")(x)
-    x = layers.BatchNormalization(momentum=0.8, name="L9_BatchNorm")(x)
-    x = layers.ReLU(name="L9_ReLU")(x)
-
-    # L10: Dropout 0.25
-    x = layers.Dropout(0.25, name="L10_Dropout_0.25")(x)
-
-    # L11: Dense -> BatchNorm -> ReLU
-    x = layers.Dense(d2_units, use_bias=False, kernel_regularizer=reg, name=f"L11_Dense_{d2_units}")(x)
-    x = layers.BatchNormalization(momentum=0.8, name="L11_BatchNorm")(x)
-    x = layers.ReLU(name="L11_ReLU")(x)
-
-    # L12: Dropout 0.25
-    x = layers.Dropout(0.25, name="L12_Dropout_0.25")(x)
-
-    # L13: Dense 4, Softmax (or Sigmoid if requested)
+    # L11: Dense 4, Softmax
     outputs = layers.Dense(
         n_classes,
         activation=output_activation,
-        kernel_regularizer=reg,
-        name="L13_Dense_4",
+        name="L11_Dense_4",
     )(x)
 
     model = models.Model(inputs=inputs, outputs=outputs, name=f"CNN_LSTM_{capacity.capitalize()}")
@@ -196,28 +170,32 @@ class CNNLSTMModel:
         self.history: Dict[str, List[float]] = {}
 
     def _normalize(self, X: np.ndarray) -> np.ndarray:
-        """Per-sample z-score standardization across the temporal sequence (zero mean, unit variance)."""
-        mean = np.mean(X, axis=1, keepdims=True)
-        std = np.std(X, axis=1, keepdims=True)
+        """Per-sample z-score standardization across temporal and channel dimensions."""
+        if X.ndim == 3:
+            mean = np.mean(X, axis=(1, 2), keepdims=True)
+            std = np.std(X, axis=(1, 2), keepdims=True)
+        else:
+            mean = np.mean(X, axis=1, keepdims=True)
+            std = np.std(X, axis=1, keepdims=True)
         std = np.where(std < 1e-7, 1.0, std)
         return ((X - mean) / std).astype(np.float32)
 
     def _ensure_3d(self, X: np.ndarray) -> np.ndarray:
-        """Ensure input has shape (batch_size, input_length, 1) and is normalized if enabled."""
+        """Ensure input has shape (batch_size, time_steps, channels) and is normalized."""
         if X.ndim == 1:
             X = X.reshape(1, -1)
+        if X.ndim == 2:
+            if X.shape[1] == 2560:
+                # 10 motor cortex channels of length 256
+                X = X.reshape(-1, 10, 256).transpose(0, 2, 1)
+            elif X.shape[1] == 5120:
+                X = X.reshape(-1, 10, 512).transpose(0, 2, 1)
+            elif X.shape[1] == 1024:
+                X = X.reshape(-1, 2, 512).transpose(0, 2, 1)
+            else:
+                X = np.expand_dims(X, axis=-1)
         if self.normalize_input:
             X = self._normalize(X)
-        if X.ndim == 2:
-            X = np.expand_dims(X, axis=-1)
-        # Verify length matches input_length; pad or crop if necessary
-        current_len = X.shape[1]
-        if current_len != self.input_length:
-            if current_len < self.input_length:
-                pad_width = ((0, 0), (0, self.input_length - current_len), (0, 0))
-                X = np.pad(X, pad_width, mode="constant")
-            else:
-                X = X[:, : self.input_length, :]
         return X.astype(np.float32)
 
     def _to_categorical(self, y: np.ndarray) -> np.ndarray:
@@ -238,12 +216,13 @@ class CNNLSTMModel:
         """Train CNN-LSTM model with learning rate scheduling and early stopping.
         """
         X_3d = self._ensure_3d(X)
-        self.input_length = X_3d.shape[1]
+        input_shape = (X_3d.shape[1], X_3d.shape[2])
+        self.input_length = input_shape
         y_cat = self._to_categorical(y)
 
         if self.model is None:
             self.model = build_cnn_lstm_model(
-                input_length=self.input_length,
+                input_length=input_shape,
                 n_classes=self.n_classes,
                 learning_rate=self.learning_rate,
                 l2_reg=self.l2_reg,
@@ -255,30 +234,43 @@ class CNNLSTMModel:
         batch_size = batch_size or self.batch_size
 
         cb_list = []
-        monitor_metric = "val_loss" if (X_val is not None and y_val is not None) else "loss"
-
-        # Adaptive learning rate decay when reaching plateau
+        reduce_monitor = "val_loss" if (X_val is not None and y_val is not None) else "loss"
         reduce_lr = callbacks.ReduceLROnPlateau(
-            monitor=monitor_metric,
+            monitor=reduce_monitor,
+            mode="min",
             factor=0.5,
-            patience=5,
-            min_lr=1e-6,
+            patience=4,
+            min_lr=1e-5,
             verbose=verbose,
         )
         cb_list.append(reduce_lr)
 
         val_data = None
+        ckpt_path = None
         if X_val is not None and y_val is not None:
             X_val_3d = self._ensure_3d(X_val)
             y_val_cat = self._to_categorical(y_val)
             val_data = (X_val_3d, y_val_cat)
             early_stop = callbacks.EarlyStopping(
-                monitor="val_loss",
+                monitor="val_accuracy",
+                mode="max",
                 patience=15,
                 restore_best_weights=True,
                 verbose=verbose,
             )
             cb_list.append(early_stop)
+
+            ckpt_path = Path("artifacts") / ".tmp_best_cnn_lstm.weights.h5"
+            ckpt_path.parent.mkdir(parents=True, exist_ok=True)
+            checkpoint = callbacks.ModelCheckpoint(
+                filepath=str(ckpt_path),
+                monitor="val_accuracy",
+                mode="max",
+                save_best_only=True,
+                save_weights_only=True,
+                verbose=verbose,
+            )
+            cb_list.append(checkpoint)
 
         # Compute balanced class weights if requested and not provided
         class_weights_dict = class_weight
@@ -298,6 +290,14 @@ class CNNLSTMModel:
             class_weight=class_weights_dict,
             verbose=verbose,
         )
+
+        if ckpt_path and ckpt_path.exists():
+            try:
+                self.model.load_weights(str(ckpt_path))
+                ckpt_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+
         self.history = fit_res.history
         self.is_trained = True
         return self

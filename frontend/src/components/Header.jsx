@@ -82,7 +82,7 @@ export default function Header({ activeTab, onTabChange, backendHealth, backendS
                 border: '1px solid rgba(255, 255, 255, 0.15)',
               }}
             >
-              {backendHealth?.version ? `v${backendHealth.version}` : 'v1.0'}
+              {backendHealth?.version ? `v${backendHealth.version}` : 'v2.0'}
             </span>
           </div>
         </div>

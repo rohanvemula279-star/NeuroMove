@@ -35,8 +35,14 @@ MOTOR_CORTEX_21: List[str] = [
 
 
 def clean_channel_name(ch: str) -> str:
-    """Normalize channel names (e.g., 'Fc3.' -> 'FC3', 'c3..' -> 'C3')."""
-    return ch.strip(".").upper()
+    """Normalize channel names (e.g., 'Fc3.' -> 'FC3', 'EEG C3-REF' -> 'C3', 'c3..' -> 'C3')."""
+    cleaned = ch.strip().strip(".").upper()
+    if cleaned.startswith("EEG"):
+        cleaned = cleaned[3:].strip(" .-_")
+    for suffix in ["-REF", "-LE", "_REF", "..", "."]:
+        if cleaned.endswith(suffix):
+            cleaned = cleaned[: -len(suffix)].strip()
+    return cleaned
 
 
 def resample_signal(data: np.ndarray, orig_fs: float = 160.0, target_fs: float = 128.0) -> np.ndarray:

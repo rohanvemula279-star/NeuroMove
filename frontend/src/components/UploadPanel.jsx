@@ -350,6 +350,20 @@ export default function UploadPanel({ onTrialLoaded, currentTrial }) {
                 {currentTrial.samples_per_channel || 9}
               </div>
             </div>
+
+            {currentTrial.ground_truth_label && (
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                padding: '10px',
+                borderRadius: 'var(--radius-sm)'
+              }}>
+                <div style={{ fontSize: '0.75rem', color: '#E4E4E7', fontWeight: 700 }}>VERIFIED GROUND TRUTH</div>
+                <div className="mono" style={{ fontSize: '0.90rem', fontWeight: 800, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {currentTrial.ground_truth_code}: {currentTrial.ground_truth_label}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Channel Montage Preview */}

@@ -21,6 +21,7 @@ def test_root_health():
     data = response.json()
     assert data["system"] == "NeuroMove EEG Classification Backend"
     assert data["status"] == "online"
+    assert data["version"] == "2.0.0"
 
 
 def test_upload_numpy_trial():

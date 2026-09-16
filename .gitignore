@@ -8,7 +8,7 @@ venv/
 env/
 ENV/
 Lib/
-Scripts/
+!/scripts/
 share/
 pyvenv.cfg
 CACHEDIR.TAG
@@ -23,6 +23,8 @@ __pycache__/
 .coverage
 htmlcov/
 *.log
+*.event
+*.tmp
 
 # Frontend Dependencies & Build Outputs
 node_modules/

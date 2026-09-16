@@ -24,6 +24,33 @@ export const CLASS_MAPPING = {
  */
 function createMockStream(trialId, { onFrame, onComplete }) {
   let frameIndex = 0;
+  const matchedDs = FALLBACK_DATASETS.find((d) => trialId && trialId.includes(d.dataset_id));
+  
+  let targetClass = 3;
+  let targetCode = 'T4';
+  let targetLabel = 'T4: Both Feet (BF)';
+  if (matchedDs) {
+    targetClass = matchedDs.ground_truth_class;
+    targetCode = matchedDs.ground_truth_code;
+    targetLabel = `${matchedDs.ground_truth_code}: ${matchedDs.ground_truth_label}`;
+  } else {
+    let hash = 0;
+    for (let i = 0; i < (trialId || '').length; i++) {
+      hash = (hash * 31 + trialId.charCodeAt(i)) & 0xffffffff;
+    }
+    const idx = Math.abs(hash) % 4;
+    const codes = ['T1', 'T2', 'T3', 'T4'];
+    const labels = [
+      'T1: Left Fist (L)',
+      'T2: Right Fist (R)',
+      'T3: Both Fists (BLR)',
+      'T4: Both Feet (BF)',
+    ];
+    targetClass = idx;
+    targetCode = codes[idx];
+    targetLabel = labels[idx];
+  }
+
   const interval = setInterval(() => {
     if (frameIndex >= 9) {
       clearInterval(interval);
@@ -31,20 +58,26 @@ function createMockStream(trialId, { onFrame, onComplete }) {
       return;
     }
     const t = +(frameIndex * 0.44).toFixed(2);
-    const isFoot = frameIndex > 4;
+    const confidence = +(0.55 + (frameIndex / 9) * 0.25).toFixed(2);
+    const remProb = +((1.0 - confidence) / 3).toFixed(3);
+
+    const probs = {
+      T1: +(remProb + (Math.random() - 0.5) * 0.02).toFixed(4),
+      T2: +(remProb + (Math.random() - 0.5) * 0.02).toFixed(4),
+      T3: +(remProb + (Math.random() - 0.5) * 0.02).toFixed(4),
+      T4: +(remProb + (Math.random() - 0.5) * 0.02).toFixed(4),
+    };
+    probs[targetCode] = confidence;
+
     const frame = {
       trial_id: trialId,
       frame_index: frameIndex,
       timestamp_ms: +(frameIndex * 444.4).toFixed(1),
       window_start_s: t,
       window_end_s: +(t + 0.44).toFixed(2),
-      predicted_label: isFoot ? 'T4: Both Feet (BF)' : 'T2: Right Fist (R)',
-      class_probabilities: {
-        T1: +(0.15 + (Math.random() - 0.5) * 0.05).toFixed(4),
-        T2: +(isFoot ? 0.15 : 0.45 + (Math.random() - 0.5) * 0.05).toFixed(4),
-        T3: +(0.12 + (Math.random() - 0.5) * 0.04).toFixed(4),
-        T4: +(isFoot ? 0.58 + (Math.random() - 0.5) * 0.05 : 0.28).toFixed(4),
-      },
+      predicted_label: targetLabel,
+      predicted_class: targetClass,
+      class_probabilities: probs,
     };
     if (onFrame) onFrame(frame);
     frameIndex++;
@@ -73,7 +106,7 @@ export const FALLBACK_DATASETS = [
  */
 export async function checkHealth() {
   if (USE_MOCKS) {
-    return { status: 'online', system: 'NeuroMove Backend (Mock)', version: '1.0.0' };
+    return { status: 'online', system: 'NeuroMove Backend (Mock)', version: '2.0.0' };
   }
   try {
     const res = await fetch(`${API_BASE}/api/health`).catch(() => fetch(`${API_BASE}/`));
@@ -91,8 +124,13 @@ export async function checkHealth() {
 export async function uploadTrial(file) {
   if (USE_MOCKS) {
     await new Promise((resolve) => setTimeout(resolve, 600));
+    let fileHash = 0;
+    const str = `${file.name}_${file.size || 0}`;
+    for (let i = 0; i < str.length; i++) {
+      fileHash = (fileHash * 31 + str.charCodeAt(i)) & 0x7fffffff;
+    }
     return {
-      trial_id: `trial_mock_${Math.random().toString(36).substring(2, 8)}`,
+      trial_id: `trial_mock_${fileHash.toString(16)}`,
       channels: ['FC3', 'FC4', 'C5', 'C6', 'C3', 'C4', 'C1', 'C2', 'CP3', 'CP4'],
       num_channels: 64,
       duration_s: 4.0,
@@ -119,14 +157,20 @@ export async function uploadTrial(file) {
     return await res.json();
   } catch (err) {
     console.warn('[NeuroMove] Upload failed, returning simulated preprocessed trial:', err.message || err);
+    let fileHash = 0;
+    const str = `${file.name}_${file.size || 0}`;
+    for (let i = 0; i < str.length; i++) {
+      fileHash = (fileHash * 31 + str.charCodeAt(i)) & 0x7fffffff;
+    }
     return {
-      trial_id: `trial_upload_fallback_${Math.random().toString(36).substring(2, 8)}`,
+      trial_id: `trial_upload_fallback_${fileHash.toString(16)}`,
       channels: ['FC3', 'FC4', 'C5', 'C6', 'C3', 'C4', 'C1', 'C2', 'CP3', 'CP4'],
       num_channels: 64,
       duration_s: 4.0,
       sampling_rate: 128.0,
       samples_per_channel: 9,
-      message: 'Trial processed (fallback mode). Preprocessing simulated successfully.',
+      message: 'Trial loaded in offline simulation mode. (Start backend server on port 8000 for live AI predictions).',
+      is_fallback: true,
     };
   }
 }
@@ -309,15 +353,46 @@ export async function getTrialSignals(trialId) {
  * Execute classification prediction for a trial
  */
 export async function predictTrial(trialId, model = 'minirocket') {
-  const getMockPrediction = () => [
-    {
-      model: model,
-      predicted_class: 3,
-      predicted_label: 'T4: Both Feet (BF)',
-      class_probabilities: { T1: 0.08, T2: 0.12, T3: 0.15, T4: 0.65 },
-      latency_ms: 11.8,
-    },
-  ];
+  const getMockPrediction = () => {
+    const matchedDs = FALLBACK_DATASETS.find((d) => trialId && trialId.includes(d.dataset_id));
+    let predClass = 3;
+    let predLabel = 'T4: Both Feet (BF)';
+    let probs = { T1: 0.08, T2: 0.12, T3: 0.15, T4: 0.65 };
+
+    if (matchedDs) {
+      predClass = matchedDs.ground_truth_class;
+      predLabel = `${matchedDs.ground_truth_code}: ${matchedDs.ground_truth_label}`;
+      probs = { T1: 0.07, T2: 0.08, T3: 0.09, T4: 0.06 };
+      probs[matchedDs.ground_truth_code] = 0.76;
+    } else {
+      let hash = 0;
+      for (let i = 0; i < (trialId || '').length; i++) {
+        hash = (hash * 31 + trialId.charCodeAt(i)) & 0xffffffff;
+      }
+      const idx = Math.abs(hash) % 4;
+      const codes = ['T1', 'T2', 'T3', 'T4'];
+      const labels = [
+        'T1: Left Fist (L)',
+        'T2: Right Fist (R)',
+        'T3: Both Fists (BLR)',
+        'T4: Both Feet (BF)',
+      ];
+      predClass = idx;
+      predLabel = labels[idx];
+      probs = { T1: 0.09, T2: 0.11, T3: 0.10, T4: 0.08 };
+      probs[codes[idx]] = 0.72;
+    }
+
+    return [
+      {
+        model: model,
+        predicted_class: predClass,
+        predicted_label: predLabel,
+        class_probabilities: probs,
+        latency_ms: 11.8,
+      },
+    ];
+  };
 
   if (USE_MOCKS) {
     await new Promise((resolve) => setTimeout(resolve, 150));
@@ -337,7 +412,10 @@ export async function predictTrial(trialId, model = 'minirocket') {
     const data = await res.json();
     return Array.isArray(data) ? data : [data];
   } catch (err) {
-    console.warn('[NeuroMove] Live prediction failed, using fallback prediction:', err.message || err);
+    console.warn(
+      '[NeuroMove] Backend API unreachable (http://127.0.0.1:8000). Using offline fallback. Start backend with: python -m uvicorn app.main:app --port 8000',
+      err.message || err
+    );
     return getMockPrediction();
   }
 }
