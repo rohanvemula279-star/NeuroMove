@@ -1,0 +1,176 @@
+/**
+ * NeuroMove Mock Data Fixtures (matching real backend schemas exactly)
+ * Used when VITE_USE_MOCKS=true for offline development and testing.
+ */
+
+export const MOCK_METRICS_MINIROCKET = {
+  model_name: "minirocket",
+  mode: "subject_dependent",
+  evaluation_protocol: "5-Pair Motor Cortex MiniRocket (Person-1 to Person-5)",
+  global_accuracy: 0.9580,
+  macro_precision: 0.9589,
+  macro_recall: 0.9579,
+  macro_f1: 0.9580,
+  per_class_metrics: {
+    T1: {
+      label: "T1: Left Fist (L)",
+      precision: 0.9643,
+      recall: 0.9310,
+      f1_score: 0.9474,
+      support: 203,
+    },
+    T2: {
+      label: "T2: Right Fist (R)",
+      precision: 0.9378,
+      recall: 0.9703,
+      f1_score: 0.9538,
+      support: 202,
+    },
+    T3: {
+      label: "T3: Both Fists (BLR)",
+      precision: 0.9895,
+      recall: 0.9400,
+      f1_score: 0.9641,
+      support: 200,
+    },
+    T4: {
+      label: "T4: Both Feet (BF)",
+      precision: 0.9442,
+      recall: 0.9902,
+      f1_score: 0.9667,
+      support: 205,
+    },
+  },
+  confusion_matrix: [
+    [0.9310, 0.0345, 0.0049, 0.0296],
+    [0.0198, 0.9703, 0.0050, 0.0050],
+    [0.0150, 0.0200, 0.9400, 0.0250],
+    [0.0000, 0.0098, 0.0000, 0.9902],
+  ],
+  roc_auc: {
+    macro_auc: 0.9956,
+    T1: 0.9925,
+    T2: 0.9961,
+    T3: 0.9958,
+    T4: 0.9981,
+  },
+  roc_curves: {
+    T1: { fpr: [0.0, 0.05, 0.1, 0.2, 1.0], tpr: [0.0, 0.93, 0.97, 0.99, 1.0] },
+    T2: { fpr: [0.0, 0.03, 0.1, 0.2, 1.0], tpr: [0.0, 0.97, 0.99, 1.0, 1.0] },
+    T3: { fpr: [0.0, 0.02, 0.1, 0.2, 1.0], tpr: [0.0, 0.94, 0.98, 1.0, 1.0] },
+    T4: { fpr: [0.0, 0.01, 0.1, 0.2, 1.0], tpr: [0.0, 0.99, 1.0, 1.0, 1.0] },
+  },
+  per_subject_accuracy: { S001: 0.9542, S002: 0.9759, S003: 0.9351, S004: 0.9744, S005: 0.9503 },
+  per_subject_per_class: {},
+  inference_latency: { ms_per_sample: 7.7, ms_per_trial: 69.5 },
+  trainable_parameters: 20004,
+  training_time_s: 33.9,
+  learned_signal: true,
+  sanity_check: {
+    learned_signal: true,
+    verdict: "LEARNED_SIGNAL",
+    chance_level: 0.25,
+    test_accuracy: 0.9580,
+    accuracy_delta: 0.7080,
+    unique_predicted_classes: 4,
+    failure_reasons: [],
+  },
+  subject_fold_details: {
+    S001: { mean_accuracy: 0.4431, std_accuracy: 0.0813 },
+    S002: { mean_accuracy: 0.5582, std_accuracy: 0.0970 },
+    S003: { mean_accuracy: 0.4313, std_accuracy: 0.0948 },
+    S004: { mean_accuracy: 0.4156, std_accuracy: 0.1186 },
+    S089: { mean_accuracy: 0.2906, std_accuracy: 0.0635 },
+  },
+  preprocessing_configuration: {
+    filter_method: "bandpass",
+    channel_mode: "5_pairs",
+    frequency_band_hz: [8.0, 30.0],
+    fusion_type: "5_pairs_feature_level_spatial_fusion",
+    pairs: ["FC3-FC4", "C5-C6", "C3-C4", "C1-C2", "CP3-CP4"],
+  },
+};
+
+export const MOCK_METRICS_CNN_LSTM = {
+  model_name: "cnn_lstm",
+  mode: "subject_dependent",
+  evaluation_protocol: "10-Fold Within-Subject Trial-Stratified CV (Paper Section 3.1)",
+  global_accuracy: 0.2996,
+  macro_precision: 0.3063,
+  macro_recall: 0.2989,
+  macro_f1: 0.2759,
+  per_class_metrics: {
+    T1: { label: "T1: Left Fist (L)", precision: 0.2947, recall: 0.2659, f1_score: 0.2796, support: 756 },
+    T2: { label: "T2: Right Fist (R)", precision: 0.3525, recall: 0.1786, f1_score: 0.2371, support: 756 },
+    T3: { label: "T3: Both Fists (BLR)", precision: 0.2876, recall: 0.1468, f1_score: 0.1944, support: 756 },
+    T4: { label: "T4: Both Feet (BF)", precision: 0.2905, recall: 0.6045, f1_score: 0.3924, support: 756 },
+  },
+  confusion_matrix: [
+    [0.2659, 0.1098, 0.1323, 0.4921],
+    [0.2077, 0.1786, 0.1257, 0.4881],
+    [0.2262, 0.1310, 0.1468, 0.4960],
+    [0.2024, 0.0873, 0.1058, 0.6045],
+  ],
+  roc_auc: { macro_auc: 0.5312, T1: 0.521, T2: 0.514, T3: 0.518, T4: 0.572 },
+  roc_curves: {},
+  per_subject_accuracy: { S001: 0.3829, S002: 0.2738, S003: 0.2646, S004: 0.2765 },
+  per_subject_per_class: {},
+  inference_latency: { ms_per_sample: 18.2, ms_per_trial: 163.8 },
+  trainable_parameters: 182404,
+  training_time_s: 4120.5,
+  learned_signal: false,
+  sanity_check: {
+    learned_signal: false,
+    verdict: "FAILED_SANITY_CHECK",
+    chance_level: 0.25,
+    test_accuracy: 0.2989,
+    accuracy_delta: 0.0489,
+    unique_predicted_classes: 4,
+    failure_reasons: [
+      "Test accuracy (29.89%) does not exceed chance level (25.00%) by required margin (5.00%).",
+    ],
+  },
+};
+
+export const MOCK_LEADERBOARD = {
+  mode: "subject_dependent",
+  subjects: [
+    {
+      subject_id: "S001",
+      minirocket_accuracy: 0.9542,
+      cnn_lstm_accuracy: 0.3829,
+      best_model: "MiniRocket",
+      per_class_accuracies: { T1: 0.9111, T2: 1.0, T3: 0.9286, T4: 1.0 },
+    },
+    {
+      subject_id: "S002",
+      minirocket_accuracy: 0.9759,
+      cnn_lstm_accuracy: 0.2738,
+      best_model: "MiniRocket",
+      per_class_accuracies: { T1: 1.0, T2: 0.9487, T3: 0.9787, T4: 0.9767 },
+    },
+    {
+      subject_id: "S003",
+      minirocket_accuracy: 0.9351,
+      cnn_lstm_accuracy: 0.2646,
+      best_model: "MiniRocket",
+      per_class_accuracies: { T1: 0.8409, T2: 0.9722, T3: 0.9310, T4: 1.0 },
+    },
+    {
+      subject_id: "S004",
+      minirocket_accuracy: 0.9744,
+      cnn_lstm_accuracy: 0.2765,
+      best_model: "MiniRocket",
+      per_class_accuracies: { T1: 0.9348, T2: 0.9667, T3: 1.0, T4: 1.0 },
+    },
+    {
+      subject_id: "S005",
+      minirocket_accuracy: 0.9503,
+      cnn_lstm_accuracy: null,
+      best_model: "MiniRocket",
+      per_class_accuracies: { T1: 1.0, T2: 0.9672, T3: 0.8696, T4: 0.9767 },
+    },
+  ],
+  overall_mean_minirocket: 0.9580,
+  overall_mean_cnn_lstm: 0.2996,
+};

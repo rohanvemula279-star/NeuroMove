@@ -1,0 +1,53 @@
+# ==========================================
+# Git Ignore for NeuroMove
+# ==========================================
+
+# Virtual Environments & Python Packages
+.venv/
+venv/
+env/
+ENV/
+Lib/
+Scripts/
+share/
+pyvenv.cfg
+CACHEDIR.TAG
+.lock
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Frontend Dependencies & Build Outputs
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+dist-ssr/
+frontend/dist-ssr/
+*.local
+.npm
+.eslintcache
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Cache directories
+.cv_cache/
+.ablation_cache/
+storage/trials/
