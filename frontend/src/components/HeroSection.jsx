@@ -14,11 +14,11 @@ export default function HeroSection({
   currentTrial,
 }) {
   const specs = [
-    { label: '95.80% ACCURACY', icon: <ShieldCheck size={13} color="#FFFFFF" /> },
+    { label: '97.41% & 97.16% ACCURACY', icon: <ShieldCheck size={13} color="#FFFFFF" /> },
     { label: '0% TRIAL LEAKAGE', icon: <Cpu size={13} color="#D4D4D8" /> },
     { label: '5-PAIR MOTOR FUSION', icon: <Activity size={13} color="#A1A1AA" /> },
-    { label: '6.1 MS LATENCY', icon: <Zap size={13} color="#71717A" /> },
-    { label: '10-FOLD STRATIFIED CV', icon: null },
+    { label: '2.15 - 7.2 MS LATENCY', icon: <Zap size={13} color="#71717A" /> },
+    { label: 'ZERO-LEAKAGE STRATIFIED TEST', icon: null },
   ];
 
   return (

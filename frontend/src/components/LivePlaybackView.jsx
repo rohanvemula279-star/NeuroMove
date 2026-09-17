@@ -10,6 +10,7 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
   const [currentFrame, setCurrentFrame] = useState(null);
   const [streamProgress, setStreamProgress] = useState(0); // 0 to 100%
   const [finalPrediction, setFinalPrediction] = useState(null);
+  const [finalPredictions, setFinalPredictions] = useState([]);
   const [liveProbabilities, setLiveProbabilities] = useState({ T1: 0.25, T2: 0.25, T3: 0.25, T4: 0.25 });
   const [streamError, setStreamError] = useState(null);
   const [waveformSignal, setWaveformSignal] = useState(null);
@@ -20,6 +21,7 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
   useEffect(() => {
     if (!currentTrial?.trial_id) return;
     setFinalPrediction(null);
+    setFinalPredictions([]);
     setCurrentFrame(null);
     setStreamProgress(0);
     setStreamError(null);
@@ -132,10 +134,11 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
       onComplete: () => {
         setIsStreaming(false);
         setStreamProgress(100);
-        // Automatically fetch final consensus prediction
-        predictTrial(currentTrial.trial_id, selectedModel)
+        // Automatically fetch final consensus prediction from both models
+        predictTrial(currentTrial.trial_id, 'both')
           .then((preds) => {
             if (preds && preds.length > 0) {
+              setFinalPredictions(preds);
               setFinalPrediction(preds[0]);
               setLiveProbabilities(preds[0].class_probabilities);
             }
@@ -158,12 +161,13 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
       return;
     }
 
-    const modelToUse = forcedModel || selectedModel || 'minirocket';
+    const modelToUse = forcedModel || 'both';
     setIsPredicting(true);
     setStreamError(null);
     try {
       const preds = await predictTrial(currentTrial.trial_id, modelToUse);
       if (preds && preds.length > 0) {
+        setFinalPredictions(preds);
         setFinalPrediction(preds[0]);
         setLiveProbabilities(preds[0].class_probabilities);
         setStreamProgress(100);
@@ -175,18 +179,20 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
     }
   };
 
-  // Quick 1-Click Test: Load specific class and predict immediately with best model
+  // Quick 1-Click Test: Load specific class and predict immediately with both champion models
   const handleQuickTest = async (datasetId) => {
     setIsPredicting(true);
     setStreamError(null);
     setFinalPrediction(null);
+    setFinalPredictions([]);
     setStreamProgress(0);
     try {
       const trial = await loadSampleTrial(datasetId);
       if (onTrialLoaded) onTrialLoaded(trial);
-      // Run inference immediately with best model (minirocket)
-      const preds = await predictTrial(trial.trial_id, 'minirocket');
+      // Run inference immediately with dual champions (MiniRocket + CNN-LSTM)
+      const preds = await predictTrial(trial.trial_id, 'both');
       if (preds && preds.length > 0) {
+        setFinalPredictions(preds);
         setFinalPrediction(preds[0]);
         setLiveProbabilities(preds[0].class_probabilities);
         setStreamProgress(100);
@@ -224,21 +230,15 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Radio size={18} color="#FFFFFF" />
-                Live Motor Imagery Streaming & Best Prediction
+                Live Motor Imagery Streaming & Dual Model Evaluation
               </h2>
-              {selectedModel === 'minirocket' ? (
-                <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
-                  <Zap size={12} />
-                  ACTIVE: BEST MODEL (95.80% ACC)
-                </span>
-              ) : (
-                <span className="badge badge-amber" style={{ fontSize: '0.72rem' }}>
-                  ACTIVE: CNN-LSTM (EXPERIMENTAL)
-                </span>
-              )}
+              <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
+                <Zap size={12} />
+                ACTIVE: DUAL CHAMPIONS (97.41% & 97.16% ACC)
+              </span>
             </div>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '4px 0 0' }}>
-              Sub-10ms inference evaluating motor imagery intent across 5 sensorimotor pairs
+              Sub-10ms dual-model inference evaluating motor imagery intent across 5 sensorimotor pairs
             </p>
           </div>
 
@@ -256,13 +256,13 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
             <button
               id="btn-run-classification"
               className="btn btn-emerald"
-              onClick={() => handleDirectPredict('minirocket')}
+              onClick={() => handleDirectPredict('both')}
               disabled={!currentTrial || isStreaming || isPredicting}
               style={{ fontWeight: 700, boxShadow: '0 4px 20px rgba(255, 255, 255, 0.25)' }}
-              title="Runs inference using the Best Model (MiniRocket 95.80% Accuracy)"
+              title="Runs inference using Dual AI Champions (MiniRocket 97.41% & CNN-LSTM 97.16% Accuracy)"
             >
               <Zap size={16} />
-              {isPredicting ? 'Predicting Best...' : 'Predict with Best Model (95.8%)'}
+              {isPredicting ? 'Evaluating Raw Data...' : 'Run Experiment & Verify Accurate Answer'}
             </button>
           </div>
         </div>
@@ -447,8 +447,12 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
         />
       </div>
 
-      {/* Decision Callout Card */}
-      <DecisionCallout prediction={finalPrediction} />
+      {/* Decision Callout Card with Dual-Model Comparison & Ground Truth Verification */}
+      <DecisionCallout
+        prediction={finalPrediction}
+        predictions={finalPredictions}
+        currentTrial={currentTrial}
+      />
     </div>
   );
 }

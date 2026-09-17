@@ -214,6 +214,26 @@ export default function UploadPanel({ onTrialLoaded, currentTrial }) {
               <p style={{ fontSize: '0.82rem', color: '#E4E4E7', margin: '4px 0 0' }}>
                 {currentTrial.message || 'Real PhysioNet EEGMMIDB recording loaded, resampled to 128 Hz, and partitioned into 5 motor-cortex feature pairs.'}
               </p>
+              {currentTrial.ground_truth_code && (
+                <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span className="badge badge-cyan" style={{ fontSize: '0.74rem' }}>
+                    GROUND TRUTH: {currentTrial.ground_truth_code} · {currentTrial.ground_truth_label}
+                  </span>
+                  <button
+                    id="btn-banner-run-experiment"
+                    onClick={() => {
+                      document.getElementById('btn-run-classification')?.click();
+                      setTimeout(() => {
+                        document.getElementById('decision-callout')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 150);
+                    }}
+                    className="btn btn-emerald"
+                    style={{ fontSize: '0.74rem', padding: '3px 10px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <Sparkles size={12} /> Run Experiment & Verify Accurate Answer
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

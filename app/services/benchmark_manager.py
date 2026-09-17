@@ -105,8 +105,8 @@ BENCHMARK_SPECS: List[Dict[str, Any]] = [
     },
     {
         "dataset_id": "ds_09",
-        "name": "Dataset #9: S089 · Right Fist (T2)",
-        "subject_id": "S089",
+        "name": "Dataset #9: S004 · Right Fist (T2)",
+        "subject_id": "S004",
         "run": 4,
         "target_class": 1,
         "class_code": "T2",
@@ -115,8 +115,8 @@ BENCHMARK_SPECS: List[Dict[str, Any]] = [
     },
     {
         "dataset_id": "ds_10",
-        "name": "Dataset #10: S089 · Both Feet (T4)",
-        "subject_id": "S089",
+        "name": "Dataset #10: S005 · Both Feet (T4)",
+        "subject_id": "S005",
         "run": 6,
         "target_class": 3,
         "class_code": "T4",

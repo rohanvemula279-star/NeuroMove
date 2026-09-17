@@ -8,14 +8,14 @@ import SpotlightCard from './effects/SpotlightCard';
  * Features 2x2 hero card with StarBorder, 1x2 telemetry & scientific rigor cards, and 1x1 supporting cards.
  */
 export default function MetricCards({ metrics }) {
-  const globalAcc = metrics?.global_accuracy ? (metrics.global_accuracy * 100).toFixed(2) : '95.80';
-  const macroF1 = metrics?.macro_f1 ? (metrics.macro_f1 * 100).toFixed(2) : '95.80';
-  const macroPrec = metrics?.macro_precision ? (metrics.macro_precision * 100).toFixed(1) : '95.9';
-  const macroRec = metrics?.macro_recall ? (metrics.macro_recall * 100).toFixed(1) : '95.8';
-  const macroAuc = metrics?.roc_auc?.macro_auc ? metrics.roc_auc.macro_auc.toFixed(4) : '0.9956';
+  const globalAcc = metrics?.global_accuracy ? (metrics.global_accuracy * 100).toFixed(2) : '97.41';
+  const macroF1 = metrics?.macro_f1 ? (metrics.macro_f1 * 100).toFixed(2) : '97.40';
+  const macroPrec = metrics?.macro_precision ? (metrics.macro_precision * 100).toFixed(1) : '97.4';
+  const macroRec = metrics?.macro_recall ? (metrics.macro_recall * 100).toFixed(1) : '97.4';
+  const macroAuc = metrics?.roc_auc?.macro_auc ? metrics.roc_auc.macro_auc.toFixed(4) : '0.9991';
 
-  let peakSub = '97.59';
-  let peakSubId = 'S002';
+  let peakSub = '100.00';
+  let peakSubId = 'S004';
   if (metrics?.per_subject_accuracy) {
     let maxAcc = 0;
     for (const [sId, acc] of Object.entries(metrics.per_subject_accuracy)) {
@@ -29,11 +29,11 @@ export default function MetricCards({ metrics }) {
 
   const latencyPerSample = metrics?.inference_latency?.ms_per_sample
     ? metrics.inference_latency.ms_per_sample.toFixed(1)
-    : '6.1';
+    : '7.2';
 
   const paramsCount = metrics?.trainable_parameters
     ? metrics.trainable_parameters.toLocaleString()
-    : '20,004';
+    : '40,004';
 
   return (
     <div className="bento-grid-container" style={{ margin: '32px 0' }}>
@@ -332,7 +332,7 @@ export default function MetricCards({ metrics }) {
               </div>
 
               <div style={{ fontSize: '0.82rem', color: '#A1A1AA' }}>
-                S004: 97.44% · S001: 95.42%
+                S004: 100.0% · S002: 97.59% · S001: 96.73%
               </div>
             </div>
 

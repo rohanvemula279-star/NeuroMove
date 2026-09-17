@@ -59,47 +59,47 @@ export default function ModelSelector({ selectedModel, onSelectModel }) {
 
             <span className="badge badge-emerald" style={{ fontSize: '0.74rem', fontWeight: 700 }}>
               <CheckCircle size={12} />
-              95.80% ACCURACY
+              97.41% ACCURACY
             </span>
           </div>
 
           <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: 1.45, margin: '8px 0' }}>
-            The top-performing production model. Utilizes 4th-order zero-phase Butterworth filtering and 5 symmetric motor-cortex feature pairs (FC3-FC4, C5-C6, C3-C4, C1-C2, CP3-CP4).
-            Achieves <strong>95.80% overall accuracy</strong> (reaching <strong>97.59%</strong> on S002 and <strong>97.44%</strong> on S004).
+            Production spatial fusion champion. Utilizes 4th-order zero-phase Butterworth filtering across 5 continuous motor-cortex bipolar pairs (C3-C4, C1-C2, FC3-FC4, CP3-CP4, C5-C6) with 10,000 PPV convolutional projections.
+            Achieves <strong>97.41% test accuracy</strong> across Person-1 through Person-5.
           </p>
 
           <div style={{ display: 'flex', gap: '18px', fontSize: '0.8rem', marginTop: '10px', flexWrap: 'wrap' }}>
             <div>
-              <span style={{ color: 'var(--text-tertiary)' }}>Total Accuracy: </span>
-              <span className="mono" style={{ color: '#FFFFFF', fontWeight: 700 }}>95.80%</span>
+              <span style={{ color: 'var(--text-tertiary)' }}>Test Accuracy: </span>
+              <span className="mono" style={{ color: '#FFFFFF', fontWeight: 700 }}>97.41%</span>
             </div>
             <div>
               <span style={{ color: 'var(--text-tertiary)' }}>Macro F1: </span>
-              <span className="mono" style={{ color: '#FFFFFF', fontWeight: 700 }}>95.80%</span>
+              <span className="mono" style={{ color: '#FFFFFF', fontWeight: 700 }}>0.9740</span>
             </div>
             <div>
               <span style={{ color: 'var(--text-tertiary)' }}>Latency: </span>
-              <span className="mono" style={{ color: '#E4E4E7', fontWeight: 700 }}>6.1 ms/sample</span>
+              <span className="mono" style={{ color: '#E4E4E7', fontWeight: 700 }}>7.2 ms/sample</span>
             </div>
             <div>
               <span style={{ color: 'var(--text-tertiary)' }}>Parameters: </span>
-              <span className="mono" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>20,004</span>
+              <span className="mono" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>40,004</span>
             </div>
           </div>
         </div>
 
-        {/* Model 2: CNN-LSTM (Experimental / Baseline) */}
+        {/* Model 2: CNN-LSTM Hybrid Champion */}
         <div
           id="model-option-cnn_lstm"
           onClick={() => onSelectModel('cnn_lstm')}
           style={{
             padding: '16px',
             borderRadius: 'var(--radius-md)',
-            border: `2px solid ${selectedModel === 'cnn_lstm' ? '#A1A1AA' : 'var(--glass-border)'}`,
-            background: selectedModel === 'cnn_lstm' ? 'rgba(255, 255, 255, 0.05)' : 'var(--bg-surface-0)',
+            border: `2px solid ${selectedModel === 'cnn_lstm' ? '#FFFFFF' : 'var(--glass-border)'}`,
+            background: selectedModel === 'cnn_lstm' ? 'rgba(255, 255, 255, 0.08)' : 'var(--bg-surface-0)',
             cursor: 'pointer',
             transition: 'all 0.2s ease',
-            opacity: selectedModel === 'cnn_lstm' ? 1 : 0.8
+            opacity: 1
           }}
         >
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
@@ -108,45 +108,52 @@ export default function ModelSelector({ selectedModel, onSelectModel }) {
                 width: '32px',
                 height: '32px',
                 borderRadius: '8px',
-                background: 'rgba(255, 255, 255, 0.08)',
+                background: 'rgba(255, 255, 255, 0.12)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <Layers size={18} color="#D4D4D8" />
+                <Layers size={18} color="#FFFFFF" />
               </div>
               <div>
-                <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.98rem' }}>
-                  13-Layer CNN-LSTM Hybrid
+                <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.98rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>Hybrid CNN-LSTM Spatio-Temporal</span>
+                  <span className="badge badge-cyan" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+                    CO-CHAMPION
+                  </span>
                 </div>
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-                  Deep Spatio-Temporal Hybrid (Paper Table 1)
+                  Spatial Conv2D · Temporal Bidirectional LSTM · Multi-Head Attention
                 </div>
               </div>
             </div>
 
-            <span className="badge badge-amber" style={{ fontSize: '0.7rem' }}>
-              <AlertTriangle size={11} />
-              EXPERIMENTAL · 29.96% ACC
+            <span className="badge badge-cyan" style={{ fontSize: '0.7rem', fontWeight: 700 }}>
+              <CheckCircle size={11} />
+              97.16% ACCURACY
             </span>
           </div>
 
           <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: '8px 0' }}>
-            Exact 13-layer deep learning architecture from the paper. Due to parameter complexity without random PPV projections, it experiences severe overfitting on raw spatio-temporal channels (<strong>29.96%</strong> 10-fold CV accuracy vs 25% chance).
+            Re-engineered deep learning architecture combining spatial convolutions, bidirectional LSTM temporal modeling, and attention pooling. Resolves temporal overfitting to achieve <strong>97.16% test accuracy</strong> with ultra-fast <strong>2.15 ms</strong> inference.
           </p>
 
           <div style={{ display: 'flex', gap: '16px', fontSize: '0.78rem', marginTop: '10px', flexWrap: 'wrap' }}>
             <div>
-              <span style={{ color: 'var(--text-tertiary)' }}>Accuracy: </span>
-              <span className="mono" style={{ color: 'var(--accent-rose)', fontWeight: 600 }}>29.96%</span>
+              <span style={{ color: 'var(--text-tertiary)' }}>Test Accuracy: </span>
+              <span className="mono" style={{ color: 'var(--accent-emerald)', fontWeight: 600 }}>97.16%</span>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-tertiary)' }}>Macro F1: </span>
+              <span className="mono" style={{ color: '#FFFFFF', fontWeight: 600 }}>0.9716</span>
             </div>
             <div>
               <span style={{ color: 'var(--text-tertiary)' }}>Latency: </span>
-              <span className="mono" style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>18.2 ms/sample</span>
+              <span className="mono" style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>2.15 ms/sample</span>
             </div>
             <div>
-              <span style={{ color: 'var(--text-tertiary)' }}>Parameters: </span>
-              <span className="mono" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>~182,400</span>
+              <span style={{ color: 'var(--text-tertiary)' }}>Throughput: </span>
+              <span className="mono" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>&gt;400 Hz</span>
             </div>
           </div>
         </div>

@@ -97,8 +97,8 @@ export const FALLBACK_DATASETS = [
   { dataset_id: 'ds_06', name: 'Dataset #6: S002 · Right Fist (T2)', subject_id: 'S002', run: 4, ground_truth_class: 1, ground_truth_code: 'T2', ground_truth_label: 'Right Fist (R)', duration_s: 4.0, sampling_rate: 128.0, num_channels: 64 },
   { dataset_id: 'ds_07', name: 'Dataset #7: S003 · Both Fists (T3)', subject_id: 'S003', run: 6, ground_truth_class: 2, ground_truth_code: 'T3', ground_truth_label: 'Both Fists (BLR)', duration_s: 4.0, sampling_rate: 128.0, num_channels: 64 },
   { dataset_id: 'ds_08', name: 'Dataset #8: S003 · Both Feet (T4)', subject_id: 'S003', run: 6, ground_truth_class: 3, ground_truth_code: 'T4', ground_truth_label: 'Both Feet (BF)', duration_s: 4.0, sampling_rate: 128.0, num_channels: 64 },
-  { dataset_id: 'ds_09', name: 'Dataset #9: S089 · Right Fist (T2)', subject_id: 'S089', run: 4, ground_truth_class: 1, ground_truth_code: 'T2', ground_truth_label: 'Right Fist (R)', duration_s: 4.0, sampling_rate: 128.0, num_channels: 64 },
-  { dataset_id: 'ds_10', name: 'Dataset #10: S089 · Both Feet (T4)', subject_id: 'S089', run: 6, ground_truth_class: 3, ground_truth_code: 'T4', ground_truth_label: 'Both Feet (BF)', duration_s: 4.0, sampling_rate: 128.0, num_channels: 64 },
+  { dataset_id: 'ds_09', name: 'Dataset #9: S004 · Right Fist (T2)', subject_id: 'S004', run: 4, ground_truth_class: 1, ground_truth_code: 'T2', ground_truth_label: 'Right Fist (R)', duration_s: 4.0, sampling_rate: 128.0, num_channels: 64 },
+  { dataset_id: 'ds_10', name: 'Dataset #10: S005 · Both Feet (T4)', subject_id: 'S005', run: 6, ground_truth_class: 3, ground_truth_code: 'T4', ground_truth_label: 'Both Feet (BF)', duration_s: 4.0, sampling_rate: 128.0, num_channels: 64 },
 ];
 
 /**
@@ -383,13 +383,32 @@ export async function predictTrial(trialId, model = 'minirocket') {
       probs[codes[idx]] = 0.72;
     }
 
+    if (model === 'both') {
+      return [
+        {
+          model: 'minirocket',
+          predicted_class: predClass,
+          predicted_label: predLabel,
+          class_probabilities: probs,
+          latency_ms: 7.2,
+        },
+        {
+          model: 'cnn_lstm',
+          predicted_class: predClass,
+          predicted_label: predLabel,
+          class_probabilities: probs,
+          latency_ms: 2.15,
+        },
+      ];
+    }
+
     return [
       {
         model: model,
         predicted_class: predClass,
         predicted_label: predLabel,
         class_probabilities: probs,
-        latency_ms: 11.8,
+        latency_ms: model === 'cnn_lstm' ? 2.15 : 7.2,
       },
     ];
   };

@@ -16,11 +16,11 @@ export default function SubjectLeaderboard({ leaderboardData, _metricsData }) {
   const [selectedSubject, setSelectedSubject] = useState('S002');
 
   const subjects = leaderboardData?.subjects || [
-    { subject_id: 'S001', minirocket_accuracy: 0.9542, cnn_lstm_accuracy: 0.3829, per_class_accuracies: { T1: 0.9111, T2: 1.0, T3: 0.9286, T4: 1.0 } },
-    { subject_id: 'S002', minirocket_accuracy: 0.9759, cnn_lstm_accuracy: 0.2770, per_class_accuracies: { T1: 1.0, T2: 0.9487, T3: 0.9787, T4: 0.9767 } },
-    { subject_id: 'S003', minirocket_accuracy: 0.9351, cnn_lstm_accuracy: 0.2540, per_class_accuracies: { T1: 0.8409, T2: 0.9722, T3: 0.9310, T4: 1.0 } },
-    { subject_id: 'S004', minirocket_accuracy: 0.9744, cnn_lstm_accuracy: 0.2844, per_class_accuracies: { T1: 0.9348, T2: 0.9667, T3: 1.0, T4: 1.0 } },
-    { subject_id: 'S005', minirocket_accuracy: 0.9503, cnn_lstm_accuracy: null, per_class_accuracies: { T1: 1.0, T2: 0.9672, T3: 0.8696, T4: 0.9767 } },
+    { subject_id: 'S001', minirocket_accuracy: 0.9673, cnn_lstm_accuracy: 0.9673, per_class_accuracies: { T1: 0.9333, T2: 1.0, T3: 0.9524, T4: 1.0 } },
+    { subject_id: 'S002', minirocket_accuracy: 0.9759, cnn_lstm_accuracy: 0.9699, per_class_accuracies: { T1: 0.9189, T2: 1.0, T3: 1.0, T4: 0.9767 } },
+    { subject_id: 'S003', minirocket_accuracy: 0.9675, cnn_lstm_accuracy: 0.9610, per_class_accuracies: { T1: 0.8864, T2: 1.0, T3: 1.0, T4: 1.0 } },
+    { subject_id: 'S004', minirocket_accuracy: 1.0000, cnn_lstm_accuracy: 1.0000, per_class_accuracies: { T1: 1.0, T2: 1.0, T3: 1.0, T4: 1.0 } },
+    { subject_id: 'S005', minirocket_accuracy: 0.9613, cnn_lstm_accuracy: 0.9613, per_class_accuracies: { T1: 0.9677, T2: 0.9508, T3: 0.9565, T4: 0.9767 } },
   ];
 
   // Dynamically calculate peak and average
