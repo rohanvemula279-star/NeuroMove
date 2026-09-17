@@ -1,6 +1,9 @@
 import React from 'react';
 import { Target, TrendingUp, Timer, Layers, ShieldCheck, Zap } from 'lucide-react';
 import SpotlightCard from './effects/SpotlightCard';
+import Counter from './ui/Counter';
+import CountUp from './effects/CountUp';
+
 
 /**
  * MetricCards
@@ -108,7 +111,7 @@ export default function MetricCards({ metrics }) {
                     lineHeight: 1,
                   }}
                 >
-                  {globalAcc}%
+                  <Counter value={parseFloat(globalAcc)} decimals={2} suffix="%" />
                 </span>
                 <span style={{ color: '#E4E4E7', fontWeight: 600, fontSize: '0.94rem' }}>
                   +{(parseFloat(globalAcc) - 25.0).toFixed(2)}% vs 4-class chance
@@ -134,7 +137,7 @@ export default function MetricCards({ metrics }) {
               <div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>MACRO F1</div>
                 <div className="mono" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFFFFF' }}>
-                  {macroF1}%
+                  <CountUp to={parseFloat(macroF1)} decimals={2} suffix="%" />
                 </div>
               </div>
               <div>
@@ -146,10 +149,11 @@ export default function MetricCards({ metrics }) {
               <div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>PREC / REC</div>
                 <div className="mono" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#E4E4E7' }}>
-                  {macroPrec}% / {macroRec}%
+                  <CountUp to={parseFloat(macroPrec)} decimals={1} suffix="%" /> / <CountUp to={parseFloat(macroRec)} decimals={1} suffix="%" />
                 </div>
               </div>
             </div>
+
           </SpotlightCard>
         </div>
 
@@ -209,10 +213,11 @@ export default function MetricCards({ metrics }) {
                     letterSpacing: '-0.03em',
                   }}
                 >
-                  {latencyPerSample}
+                  <CountUp to={parseFloat(latencyPerSample)} decimals={1} />
                 </span>
                 <span style={{ color: '#D4D4D8', fontWeight: 600, fontSize: '1.1rem' }}>ms / window</span>
               </div>
+
 
               <div style={{ fontSize: '0.85rem', color: '#A1A1AA', marginTop: '6px', lineHeight: 1.55 }}>
                 ~163 Hz continuous decision rate. Eliminates sensory lag for closed-loop BCI neuroprosthetics.
@@ -328,8 +333,9 @@ export default function MetricCards({ metrics }) {
               </div>
 
               <div className="mono" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#FFFFFF', margin: '8px 0' }}>
-                {peakSub}%
+                <CountUp to={parseFloat(peakSub)} decimals={2} suffix="%" />
               </div>
+
 
               <div style={{ fontSize: '0.82rem', color: '#A1A1AA' }}>
                 S004: 100.0% · S002: 97.59% · S001: 96.73%

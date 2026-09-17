@@ -14,10 +14,11 @@ const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';
 
 export const CLASS_MAPPING = {
   T1: { code: 'T1', label: 'Left Fist', abbreviation: 'L', color: '#38BDF8' },
-  T2: { code: 'T2', label: 'Right Fist', abbreviation: 'R', color: '#818CF8' },
-  T3: { code: 'T3', label: 'Both Fists', abbreviation: 'BLR', color: '#C084FC' },
-  T4: { code: 'T4', label: 'Both Feet', abbreviation: 'BF', color: '#34D399' },
+  T2: { code: 'T2', label: 'Right Fist', abbreviation: 'R', color: '#60A5FA' },
+  T3: { code: 'T3', label: 'Both Fists', abbreviation: 'BLR', color: '#10B981' },
+  T4: { code: 'T4', label: 'Both Feet', abbreviation: 'BF', color: '#F59E0B' },
 };
+
 
 /**
  * Helper to simulate mock stream playback for live WebSocket fallback

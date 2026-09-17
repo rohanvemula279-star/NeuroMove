@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Activity, Radio, AlertCircle, Sparkles, Zap } from 'lucide-react';
+import { Activity, Radio, AlertCircle, Zap } from 'lucide-react';
+
 import { createStreamWebSocket, predictTrial, getTrialSignals, loadSampleTrial } from '../api/client';
 import ProbabilityBars from './ProbabilityBars';
 import DecisionCallout from './DecisionCallout';
@@ -216,10 +217,11 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
 
   const QUICK_CLASSES = [
     { code: 'T1', label: 'Left Fist', datasetId: 'ds_01', color: '#38BDF8', subject: 'S001' },
-    { code: 'T2', label: 'Right Fist', datasetId: 'ds_02', color: '#818CF8', subject: 'S001' },
-    { code: 'T3', label: 'Both Fists', datasetId: 'ds_03', color: '#C084FC', subject: 'S001' },
-    { code: 'T4', label: 'Both Feet', datasetId: 'ds_04', color: '#34D399', subject: 'S001' },
+    { code: 'T2', label: 'Right Fist', datasetId: 'ds_02', color: '#60A5FA', subject: 'S001' },
+    { code: 'T3', label: 'Both Fists', datasetId: 'ds_03', color: '#10B981', subject: 'S001' },
+    { code: 'T4', label: 'Both Feet', datasetId: 'ds_04', color: '#F59E0B', subject: 'S001' },
   ];
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -280,11 +282,12 @@ export default function LivePlaybackView({ currentTrial, selectedModel, onTrialL
           gap: '12px'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sparkles size={16} color="#FFFFFF" />
+            <Zap size={16} color="#FFFFFF" />
             <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
               QUICK TEST REAL MOTOR CLASSES (1-CLICK BENCHMARK & PREDICT):
             </span>
           </div>
+
 
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {QUICK_CLASSES.map((cls) => (

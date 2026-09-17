@@ -5,14 +5,18 @@ import LiveView from './views/LiveView';
 import DashboardView from './views/DashboardView';
 import LeaderboardView from './views/LeaderboardView';
 import ExplainerView from './views/ExplainerView';
-import ClickSpark from './components/effects/ClickSpark';
 import GradualBlur from './components/effects/GradualBlur';
+import FloatingLines from './components/effects/FloatingLines';
+import Dock from './components/ui/Dock';
+import StaggeredMenu from './components/ui/StaggeredMenu';
 import { checkHealth, getMetrics, getSubjects, loadSampleTrial } from './api/client';
+
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedModel, setSelectedModel] = useState('minirocket');
   const [currentTrial, setCurrentTrial] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Backend state
   const [backendHealth, setBackendHealth] = useState(null);
@@ -23,6 +27,7 @@ export default function App() {
   const [leaderboardData, setLeaderboardData] = useState(null);
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
   const [leaderboardError, setLeaderboardError] = useState(null);
+
 
   // Health check & Initial data load
   useEffect(() => {
@@ -125,15 +130,21 @@ export default function App() {
     }
   };
 
+  const handleQuickBenchmark = () => {
+    setActiveTab('live');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    loadSampleTrial(null, true)
+      .then((trial) => {
+        setCurrentTrial(trial);
+      })
+      .catch((err) => console.warn(err));
+  };
+
+
   return (
     <div className="app-shell" style={{ position: 'relative', minHeight: '100vh' }}>
-      {/* 1. Crisp Pure White Click Spark Effect */}
-      <ClickSpark sparkColor="#FFFFFF" sparkCount={10} sparkRadius={26} duration={420} />
-
-      {/* 2. Progressive Gradual Blur Vignette */}
-      <GradualBlur position="top" height="70px" maxBlur={18} />
-
       <div className="app-container">
+
         {/* 3. Floating Capsule Glass Navigation */}
         <Header
           activeTab={activeTab}
@@ -381,6 +392,29 @@ export default function App() {
           </div>
         </footer>
       </div>
+
+      {/* Ambient Floating Wave Lines (EEG Micro-rhythms) */}
+      <FloatingLines lineCount={7} speed={0.006} amplitude={32} />
+
+      {/* Progressive Gradual Blur Vignette at Bottom */}
+      <GradualBlur position="bottom" height="90px" maxBlur={20} />
+
+      {/* macOS-style Bottom Floating Magnification Dock */}
+      <Dock
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onQuickAction={handleQuickBenchmark}
+      />
+
+
+      {/* Staggered Drawer Menu */}
+      <StaggeredMenu
+        isOpen={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        onSelectTab={setActiveTab}
+        activeTab={activeTab}
+      />
     </div>
   );
 }
+

@@ -80,9 +80,9 @@ export default function DecisionCallout({ prediction, predictions, currentTrial 
       {/* Top Header & Status Badges */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <CheckCircle2 size={20} color={isAccurate ? '#10B981' : classInfo.color} />
-          <span className="mono" style={{ fontSize: '0.82rem', letterSpacing: '0.05em', color: isAccurate ? '#10B981' : classInfo.color, fontWeight: 700 }}>
-            RAW EEG EXPERIMENT RESULTS & VERIFIED DECISION
+          <CheckCircle2 size={20} color={hasGroundTruth ? (isAccurate ? '#10B981' : classInfo.color) : '#38BDF8'} />
+          <span className="mono" style={{ fontSize: '0.82rem', letterSpacing: '0.05em', color: hasGroundTruth ? (isAccurate ? '#10B981' : classInfo.color) : '#FFFFFF', fontWeight: 700 }}>
+            {hasGroundTruth ? 'RAW EEG EXPERIMENT RESULTS & VERIFIED DECISION' : 'RAW EEG EXPERIMENT RESULTS & DUAL-MODEL INFERENCE'}
           </span>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -97,11 +97,31 @@ export default function DecisionCallout({ prediction, predictions, currentTrial 
               DUAL-MODEL CONSENSUS: 100%
             </span>
           )}
+          {!isConsensus && cnnLstmPred && (
+            <span
+              style={{
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                background: 'rgba(245, 158, 11, 0.15)',
+                border: '1px solid rgba(245, 158, 11, 0.45)',
+                color: '#FBBF24',
+                padding: '3px 8px',
+                borderRadius: '9999px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <AlertTriangle size={12} />
+              SPLIT DECISION: {mrTop.key} vs {cnnTop.key} (CHAMPION WEIGHTED)
+            </span>
+          )}
           <span className="badge" style={{ fontSize: '0.72rem', background: 'rgba(255, 255, 255, 0.1)', color: '#FFFFFF' }}>
             ZERO-LEAKAGE STRATIFIED TEST
           </span>
         </div>
       </div>
+
 
       {/* Main Accurate Answer Verdict Showcase */}
       <div style={{
@@ -209,8 +229,9 @@ export default function DecisionCallout({ prediction, predictions, currentTrial 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem' }}>
               <div>
                 <span style={{ color: 'var(--text-tertiary)' }}>Prediction: </span>
-                <strong style={{ color: classInfo.color }}>{mrTop.key} ({((mrTop.prob || 0) * 100).toFixed(1)}%)</strong>
+                <strong style={{ color: (CLASS_MAPPING[mrTop.key] || classInfo).color }}>{mrTop.key} ({((mrTop.prob || 0) * 100).toFixed(1)}%)</strong>
               </div>
+
               <div className="mono" style={{ color: 'var(--accent-cyan)', fontSize: '0.78rem' }}>
                 <Timer size={12} style={{ display: 'inline', marginRight: '3px' }} />
                 {minirocketPred.latency_ms ?? 7.2} ms

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, CheckCircle2, AlertCircle, Sparkles, Database } from 'lucide-react';
+import { UploadCloud, CheckCircle2, AlertCircle, Database, Zap } from 'lucide-react';
+
 import { uploadTrial, loadSampleTrial, FALLBACK_DATASETS } from '../api/client';
 
 export default function UploadPanel({ onTrialLoaded, currentTrial }) {
@@ -159,8 +160,9 @@ export default function UploadPanel({ onTrialLoaded, currentTrial }) {
             disabled={loading}
             style={{ fontSize: '0.82rem', padding: '8px 14px', boxShadow: '0 4px 20px rgba(255, 255, 255, 0.2)' }}
           >
-            <Sparkles size={14} />
+            <Database size={14} />
             {loading ? 'Loading...' : 'Load Real S089'}
+
           </button>
         </div>
       </div>
@@ -230,8 +232,9 @@ export default function UploadPanel({ onTrialLoaded, currentTrial }) {
                     className="btn btn-emerald"
                     style={{ fontSize: '0.74rem', padding: '3px 10px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                   >
-                    <Sparkles size={12} /> Run Experiment & Verify Accurate Answer
+                    <Zap size={12} /> Run Experiment & Verify Accurate Answer
                   </button>
+
                 </div>
               )}
             </div>

@@ -1,11 +1,14 @@
 import React from 'react';
 import { Play, ShieldCheck, Cpu, ArrowUpRight, Activity, Zap } from 'lucide-react';
-import SplitText from './effects/SplitText';
-import FoldText from './effects/FoldText';
 import WrapText from './effects/WrapText';
-import StarBorder from './effects/StarBorder';
 import LineWaves from './effects/LineWaves';
 import ScrollExpand from './effects/ScrollExpand';
+import WarpText from './effects/WarpText';
+import GradientText from './effects/GradientText';
+import RotatingText from './effects/RotatingText';
+import ScrollVelocity from './effects/ScrollVelocity';
+import SpecularButton from './ui/SpecularButton';
+import Lanyard from './ui/Lanyard';
 
 export default function HeroSection({
   onLaunchLive,
@@ -23,7 +26,7 @@ export default function HeroSection({
 
   return (
     <section className="hero-section" style={{ position: 'relative', marginBottom: '48px', paddingTop: '16px' }}>
-      {/* Top Announcement Pill */}
+      {/* Top Announcement Pill with RotatingText */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
         <div
           className="hero-status-pill"
@@ -31,12 +34,12 @@ export default function HeroSection({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '10px',
-            padding: '6px 18px',
+            padding: '8px 22px',
             borderRadius: '9999px',
             background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.14)',
+            border: '1px solid rgba(255, 255, 255, 0.16)',
             backdropFilter: 'blur(16px)',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
+            boxShadow: '0 4px 24px rgba(0, 0, 0, 0.4)',
           }}
         >
           <span
@@ -44,157 +47,143 @@ export default function HeroSection({
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              backgroundColor: backendStatus === 'online' ? '#FFFFFF' : '#71717A',
-              boxShadow: backendStatus === 'online' ? '0 0 10px rgba(255, 255, 255, 0.9)' : 'none',
+              backgroundColor: backendStatus === 'online' ? '#10B981' : '#71717A',
+              boxShadow: backendStatus === 'online' ? '0 0 10px #10B981' : 'none',
             }}
           />
           <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
             Scientific Transparency Standard ·{' '}
           </span>
-          <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#FFFFFF' }}>
-            <FoldText text="Hwaidi & Ghanem, NeuroImage 328 (2026)" foldColor="#FFFFFF" />
-          </span>
+          <RotatingText
+            texts={[
+              '97.41% MiniRocket Accuracy',
+              '0% Data Leakage Verified',
+              'Sub-10ms Inference Latency',
+              'PhysioNet 109 Subjects Cohort',
+              'Hwaidi & Ghanem (2026)',
+            ]}
+            interval={2600}
+            highlightColor="#FFFFFF"
+          />
         </div>
       </div>
 
-      {/* Hero Heading with SplitText */}
-      <div style={{ textAlign: 'center', maxWidth: '980px', margin: '0 auto', marginBottom: '20px' }}>
-        <SplitText
-          tag="h1"
-          text="Precision Neural Decoding for Motor Imagery BCI"
-          splitBy="words"
+      {/* Hero Heading with WarpText and GradientText */}
+      <div style={{ textAlign: 'center', maxWidth: '980px', margin: '0 auto', marginBottom: '24px' }}>
+        <h1
           className="hero-heading"
           style={{
             fontSize: 'clamp(2.4rem, 5.2vw, 4.2rem)',
             fontWeight: 800,
             lineHeight: 1.1,
             letterSpacing: '-0.04em',
-            color: '#FFFFFF',
             margin: '0 0 16px 0',
           }}
-        />
-
-        <p
-          className="hero-subheading"
-          style={{
-            fontSize: 'clamp(1rem, 1.3vw, 1.18rem)',
-            lineHeight: 1.65,
-            color: '#A1A1AA',
-            maxWidth: '780px',
-            margin: '0 auto 28px auto',
-            fontWeight: 400,
-          }}
         >
-          Production-grade 4-class motor imagery classification powered by <strong>5-pair spatial fusion</strong>,
-          a closed-form <strong>MiniRocket + Ridge</strong> pipeline, and strictly verified zero-leakage evaluation
-          across the 64-channel PhysioNet EEGMMIDB benchmark cohort.
-        </p>
+          <WarpText text="Precision Neural Decoding" interactive={true} />
+          <br />
+          <GradientText
+            colors={['#FFFFFF', '#38BDF8', '#60A5FA', '#10B981', '#FFFFFF']}
+            animationSpeed={5}
+          >
+            for Motor Imagery BCI
+          </GradientText>
+        </h1>
+
+        {/* TextPressure on interactive description */}
+        <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
+          <p
+            className="hero-subheading"
+            style={{
+              fontSize: 'clamp(1rem, 1.3vw, 1.18rem)',
+              lineHeight: 1.65,
+              color: '#A1A1AA',
+              maxWidth: '820px',
+              margin: '0 auto',
+              fontWeight: 400,
+            }}
+          >
+            Production-grade 4-class motor imagery classification powered by <strong>5-pair spatial fusion</strong>,
+            a closed-form <strong>MiniRocket + Ridge</strong> pipeline, and strictly verified zero-leakage evaluation
+            across the 64-channel PhysioNet EEGMMIDB benchmark cohort.
+          </p>
+        </div>
 
         {/* WrapText Specs Pills */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
           <WrapText items={specs} highlightIndex={0} />
         </div>
 
-        {/* Hero CTAs */}
+        {/* Hero CTAs with SpecularButton and StarBorder */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <StarBorder
-            as="button"
+          <SpecularButton
             onClick={onLaunchLive}
-            color="#FFFFFF"
-            speed="3.5s"
-            style={{
-              padding: '1px',
-              borderRadius: '9999px',
-            }}
+            variant="primary"
+            icon={<Play size={16} fill="#000000" color="#000000" />}
           >
-            <div
+            <span>Launch Live Playback</span>
+            <span
+              className="mono"
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '12px 28px',
-                background: '#FFFFFF',
-                color: '#000000',
-                fontWeight: 700,
-                fontSize: '0.94rem',
+                fontSize: '0.72rem',
+                padding: '2px 8px',
                 borderRadius: '9999px',
-                letterSpacing: '-0.01em',
-                boxShadow: '0 4px 20px rgba(255, 255, 255, 0.25)',
-                cursor: 'pointer',
+                background: 'rgba(0, 0, 0, 0.12)',
+                color: '#000000',
+                fontWeight: 800,
+                marginLeft: '4px',
               }}
             >
-              <Play size={16} fill="#000000" color="#000000" />
-              <span>Launch Live Playback</span>
-              <span
-                className="mono"
-                style={{
-                  fontSize: '0.72rem',
-                  padding: '2px 8px',
-                  borderRadius: '9999px',
-                  background: 'rgba(0, 0, 0, 0.1)',
-                  color: '#000000',
-                  fontWeight: 700,
-                }}
-              >
-                163 HZ
-              </span>
-            </div>
-          </StarBorder>
+              163 HZ
+            </span>
+          </SpecularButton>
 
-          <button
+          <SpecularButton
             onClick={onViewBenchmarks}
-            className="btn-secondary"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '13px 26px',
-              borderRadius: '9999px',
-              fontWeight: 600,
-              fontSize: '0.92rem',
-              color: '#FFFFFF',
-              background: 'rgba(255, 255, 255, 0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.18)',
-              backdropFilter: 'blur(16px)',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.35)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.18)';
-            }}
+            variant="secondary"
+            icon={<ArrowUpRight size={16} color="#FFFFFF" />}
           >
             <span>Explore Ground-Truth Benchmarks</span>
-            <ArrowUpRight size={16} color="#FFFFFF" />
-          </button>
+          </SpecularButton>
         </div>
       </div>
 
-      {/* LineWaves EEG Ribbon */}
+      {/* LineWaves Oscilloscope Ribbon */}
       <div style={{ maxWidth: '1100px', margin: '0 auto 28px auto', position: 'relative' }}>
-        <LineWaves height={140} speed={0.018} />
+        <LineWaves height={130} speed={0.016} />
       </div>
 
-      {/* ScrollExpand Interactive Showcase Preview */}
+      {/* Kinetic Velocity-reactive Marquee Ribbon */}
+      <div style={{ margin: '0 0 32px 0' }}>
+        <ScrollVelocity
+          texts={[
+            'NEUROMOVE BCI',
+            '5-PAIR SPATIAL FUSION',
+            'ZERO DATA LEAKAGE',
+            '97.41% TEST ACC',
+            '2.15 MS LATENCY',
+            'PHYSIOMET COHORT',
+          ]}
+          baseVelocity={1.4}
+        />
+      </div>
+
+      {/* ScrollExpand Interactive Showcase Preview with Lanyard Badge */}
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <ScrollExpand
-          title="PhysioNet EEG Telemetry & Oscilloscope Preview"
+          title="PhysioNet EEG Telemetry & Interactive Verification"
           badge={currentTrial ? `TRIAL: ${currentTrial.dataset_name ? currentTrial.dataset_name.split(':')[0] : currentTrial.trial_id}` : 'STANDBY'}
         >
           <div
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '20px',
+              gap: '24px',
               alignItems: 'center',
             }}
           >
             <div>
-              <div style={{ fontSize: '0.76rem', color: '#FFFFFF', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '6px' }}>
+              <div style={{ fontSize: '0.76rem', color: '#38BDF8', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '6px' }}>
                 NEUROMUSCULAR OSCILLATIONS
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF', margin: '0 0 10px 0' }}>
@@ -204,44 +193,38 @@ export default function HeroSection({
                 Spatial differential pairs (C3-C4, C1-C2, FC3-FC4, CP3-CP4, C5-C6) isolate event-related desynchronization (ERD) and synchronization (ERS) with Butterworth 8–30 Hz bandpass filtering.
               </p>
               <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                  onClick={onLaunchLive}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 18px',
-                    borderRadius: '8px',
-                    background: '#FFFFFF',
-                    border: '1px solid #FFFFFF',
-                    color: '#000000',
-                    fontWeight: 700,
-                    fontSize: '0.82rem',
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 10px rgba(255, 255, 255, 0.2)',
-                  }}
-                >
-                  <Activity size={14} />
-                  <span>Open Full Oscilloscope</span>
-                </button>
+                <SpecularButton onClick={onLaunchLive} variant="glow" icon={<Activity size={14} />}>
+                  Open Full Oscilloscope
+                </SpecularButton>
               </div>
             </div>
 
+            {/* Interactive Physics Lanyard Badge */}
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Lanyard
+                name="PHYSIOMET BENCHMARK"
+                id="ZERO-LEAKAGE-SMR"
+                affiliation="NeuroImage 328 (2026)"
+                status="VERIFIED 97.41%"
+              />
+            </div>
+
+            {/* Telemetry Diagnostics Card */}
             <div
               style={{
                 background: 'rgba(10, 10, 10, 0.9)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 borderRadius: '12px',
-                padding: '16px',
+                padding: '20px',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.78rem',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', color: '#71717A' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', color: '#71717A' }}>
                 <span>STREAM: BCI2000 WS-FEED</span>
-                <span style={{ color: '#FFFFFF', fontWeight: 600 }}>CONNECTED</span>
+                <span style={{ color: '#10B981', fontWeight: 700 }}>● CONNECTED</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#A1A1AA' }}>Primary Channel:</span>
                   <span style={{ color: '#FFFFFF', fontWeight: 600 }}>C3-C4 (Bipolar)</span>
@@ -252,11 +235,11 @@ export default function HeroSection({
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#A1A1AA' }}>Inference Engine:</span>
-                  <span style={{ color: '#FFFFFF', fontWeight: 600 }}>MiniRocket Ridge (6.1ms)</span>
+                  <span style={{ color: '#38BDF8', fontWeight: 600 }}>MiniRocket Ridge (6.1ms)</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: '#A1A1AA' }}>Multi-Class Separation:</span>
-                  <span style={{ color: '#D4D4D8' }}>ROC-AUC 0.9956</span>
+                  <span style={{ color: '#10B981', fontWeight: 700 }}>ROC-AUC 0.9956</span>
                 </div>
               </div>
             </div>
