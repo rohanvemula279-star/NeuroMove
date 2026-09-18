@@ -64,6 +64,7 @@ def build_cnn_lstm_model(
         kernel_size=7,
         padding="same",
         activation="relu",
+        kernel_regularizer=reg,
         name="L2_Conv1D_32",
     )(inputs)
     x = layers.BatchNormalization(name="L2_BatchNorm")(x)
@@ -74,13 +75,14 @@ def build_cnn_lstm_model(
         kernel_size=5,
         padding="same",
         activation="relu",
+        kernel_regularizer=reg,
         name="L3_Conv1D_64",
     )(x)
-    x = layers.BatchNormalization(name="L3_BatchNorm")(x)
+    x = layers.BatchNormalization(name="L2_BatchNorm_2")(x)
 
     # L4: Max Pooling 1D + Dropout
     x = layers.MaxPooling1D(pool_size=2, strides=2, padding="same", name="L4_MaxPooling1D")(x)
-    x = layers.Dropout(0.2, name="L4_Dropout")(x)
+    x = layers.Dropout(0.3, name="L4_Dropout")(x)
 
     # L5: Conv1D (kernel size 3) -> BatchNorm -> ReLU -> MaxPool
     x = layers.Conv1D(
@@ -88,37 +90,40 @@ def build_cnn_lstm_model(
         kernel_size=3,
         padding="same",
         activation="relu",
+        kernel_regularizer=reg,
         name="L5_Conv1D_128",
     )(x)
     x = layers.BatchNormalization(name="L5_BatchNorm")(x)
     x = layers.MaxPooling1D(pool_size=2, strides=2, padding="same", name="L5_MaxPooling1D_2")(x)
-    x = layers.Dropout(0.2, name="L5_Dropout")(x)
+    x = layers.Dropout(0.3, name="L5_Dropout")(x)
 
     # L6: Bidirectional LSTM (128 units)
     x = layers.Bidirectional(
         layers.LSTM(
             units=128,
             return_sequences=False,
+            kernel_regularizer=reg,
             name="L6_LSTM_128",
         ),
         name="L6_BiLSTM"
     )(x)
 
     # L7: Dropout
-    x = layers.Dropout(0.3, name="L7_Dropout")(x)
+    x = layers.Dropout(0.4, name="L7_Dropout")(x)
 
     # L8: Dense 128 -> BatchNorm -> ReLU
-    x = layers.Dense(128, activation="relu", name="L8_Dense_128")(x)
+    x = layers.Dense(128, activation="relu", kernel_regularizer=reg, name="L8_Dense_128")(x)
     x = layers.BatchNormalization(name="L8_BatchNorm")(x)
-    x = layers.Dropout(0.2, name="L9_Dropout")(x)
+    x = layers.Dropout(0.3, name="L9_Dropout")(x)
 
     # L10: Dense 64 -> ReLU
-    x = layers.Dense(64, activation="relu", name="L10_Dense_64")(x)
+    x = layers.Dense(64, activation="relu", kernel_regularizer=reg, name="L10_Dense_64")(x)
 
     # L11: Dense 4, Softmax
     outputs = layers.Dense(
         n_classes,
         activation=output_activation,
+        kernel_regularizer=reg,
         name="L11_Dense_4",
     )(x)
 

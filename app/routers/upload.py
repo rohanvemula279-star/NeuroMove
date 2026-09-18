@@ -172,20 +172,27 @@ async def upload_trial(file: UploadFile = File(...)) -> UploadResponse:
     gt_label: Optional[str] = None
     status_msg = "Trial uploaded, validated, and preprocessed successfully into motor-cortex feature representations."
 
-    if detected_run is not None and detected_ann is not None:
-        if detected_run in [4, 8, 12]:  # Imagined Unilateral Fist
+    if detected_run in [1, 2]:
+        status_msg = f"PhysioNet Run R{detected_run:02d} recognized as baseline recording ({'Eyes Open' if detected_run == 1 else 'Eyes Closed'}). No motor task labels."
+    elif detected_run is not None and detected_ann is not None:
+        # Runs 03, 07, 11 (execution) & 04, 08, 12 (imagery): Left Fist vs Right Fist
+        if detected_run in [3, 4, 7, 8, 11, 12]:
+            run_type = "Execution" if detected_run in [3, 7, 11] else "Imagery"
             if detected_ann == "T1":
                 gt_class, gt_code, gt_label = 0, "T1", "Left Fist (L)"
             elif detected_ann == "T2":
                 gt_class, gt_code, gt_label = 1, "T2", "Right Fist (R)"
-        elif detected_run in [6, 10, 14]:  # Imagined Bilateral Fists vs Feet
+            if gt_label:
+                status_msg = f"PhysioNet Run R{detected_run:02d} ({run_type} {detected_ann}) recognized: Ground Truth is {gt_code} ({gt_label})."
+        # Runs 05, 09, 13 (execution) & 06, 10, 14 (imagery): Both Fists vs Both Feet
+        elif detected_run in [5, 6, 9, 10, 13, 14]:
+            run_type = "Execution" if detected_run in [5, 9, 13] else "Imagery"
             if detected_ann == "T1":
                 gt_class, gt_code, gt_label = 2, "T3", "Both Fists (BLR)"
             elif detected_ann == "T2":
                 gt_class, gt_code, gt_label = 3, "T4", "Both Feet (BF)"
-
-        if gt_label:
-            status_msg = f"PhysioNet Run R{detected_run:02d} ({detected_ann}) recognized: Ground Truth is {gt_code} ({gt_label})."
+            if gt_label:
+                status_msg = f"PhysioNet Run R{detected_run:02d} ({run_type} {detected_ann}) recognized: Ground Truth is {gt_code} ({gt_label})."
 
     # Persist preprocessed trial
     n_samples = raw_data.shape[1]

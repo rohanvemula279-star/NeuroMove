@@ -22,6 +22,9 @@ from app.data.loader import PhysioNetLoader, normalize_subject_id
 from app.data.preprocessing import EEGPreprocessor
 from app.models.minirocket_pipeline import MiniRocketPipeline
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(line_buffering=True)
+
 CLASS_LABELS = {
     0: "T1: Left Fist (L)",
     1: "T2: Right Fist (R)",
@@ -130,6 +133,9 @@ def predict_from_edf(
 
     preprocessor = EEGPreprocessor(samples_per_trial=9, filter_method="bandpass", channel_mode="5_pairs")
 
+    if run_num in [1, 2]:
+        print(f"NOTICE: {file_path.name} is a baseline run (R0{run_num}: {'Eyes Open' if run_num == 1 else 'Eyes Closed'}). It contains no motor task cue labels.")
+
     # Extract 4s trials
     trial_data_list = []
     trial_labels = []
@@ -143,9 +149,11 @@ def predict_from_edf(
             continue
 
         target_class = -1
-        if run_num in [4, 8, 12]:
+        # Runs 03, 07, 11 (execution) & 04, 08, 12 (imagery): Left Fist (0) vs Right Fist (1)
+        if run_num in [3, 4, 7, 8, 11, 12]:
             target_class = 0 if ann == "T1" else (1 if ann == "T2" else -1)
-        elif run_num in [6, 10, 14]:
+        # Runs 05, 09, 13 (execution) & 06, 10, 14 (imagery): Both Fists (2) vs Both Feet (3)
+        elif run_num in [5, 6, 9, 10, 13, 14]:
             target_class = 2 if ann == "T1" else (3 if ann == "T2" else -1)
 
         end_idx = int(t_sample + 4.0 * sfreq)

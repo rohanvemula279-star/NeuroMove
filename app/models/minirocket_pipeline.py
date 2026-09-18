@@ -230,7 +230,7 @@ class MiniRocketPipeline:
         self.kernels_per_pair = kernels_per_pair
         self.max_dilations = max_dilations
         self.random_state = random_state
-        self.alphas = alphas if alphas is not None else np.logspace(-1, 5, 10)
+        self.alphas = alphas if alphas is not None else np.logspace(-1, 6, 25)
         self.is_spatial_fusion = is_spatial_fusion
 
         # Single-sequence transformer

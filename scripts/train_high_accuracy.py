@@ -30,6 +30,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(line_buffering=True)
+
 from app.data.loader import PhysioNetLoader, normalize_subject_id
 from app.data.preprocessing import EEGPreprocessor
 from app.models.minirocket_pipeline import MiniRocketPipeline
@@ -59,14 +62,27 @@ def parse_args():
     parser.add_argument(
         "--kernels",
         type=int,
-        default=5000,
-        help="Number of MiniRocket kernels (default: 5000 for fast high-accuracy training, 1000 per pair).",
+        default=10000,
+        help="Number of MiniRocket kernels (default: 10,000 per paper, 2000 per pair across 5 pairs).",
     )
     parser.add_argument(
         "--max-dilations",
         type=int,
         default=28,
-        help="Max dilations per kernel (default: 28).",
+        help="Max dilations per kernel (default: 28 per paper Section 3.3).",
+    )
+    parser.add_argument(
+        "--filter-method",
+        type=str,
+        default="bandpass",
+        choices=["bandpass", "ica"],
+        help="Filter method: 'bandpass' (Butterworth 8-30 Hz) or 'ica' (FastICA).",
+    )
+    parser.add_argument(
+        "--include-execution",
+        action="store_true",
+        default=False,
+        help="Include real motor execution runs R03,05,07,09,11,13 (~180 trials/sub). Default: False (imagery only R04,06,08,10,12,14 per paper, ~90 trials/sub).",
     )
     parser.add_argument(
         "--test-size",
@@ -92,12 +108,14 @@ def parse_args():
 def load_all_datasets(
     data_dir: Path,
     subject_names: List[str],
+    filter_method: str = "bandpass",
+    include_execution: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray, List[str], List[Dict]]:
     """Load and preprocess trials from all requested subjects."""
     loader = PhysioNetLoader(data_dir=data_dir)
     preprocessor = EEGPreprocessor(
         samples_per_trial=9,
-        filter_method="bandpass",
+        filter_method=filter_method,
         channel_mode="5_pairs",
     )
 
@@ -112,14 +130,13 @@ def load_all_datasets(
 
     for sub_raw in subject_names:
         clean_sub = sub_raw.strip()
-        # Map Person-X to S00X if needed
-        if clean_sub.lower().startswith("person-"):
-            p_num = int(clean_sub.split("-")[1])
-            norm_sub = f"S{p_num:03d}"
-        else:
-            norm_sub = normalize_subject_id(clean_sub)
+        norm_sub = normalize_subject_id(clean_sub)
 
-        trials = loader.load_subject_trials(norm_sub, return_summary=False)
+        trials = loader.load_subject_trials(
+            norm_sub,
+            include_execution=include_execution,
+            return_summary=False,
+        )
         print(f"Loaded {len(trials)} trials for {clean_sub} ({norm_sub}).")
 
         for trial_idx, (raw_data, label, ch_names) in enumerate(trials):
@@ -157,6 +174,8 @@ def train_and_evaluate(args):
     X_all, y_all, meta_all, trial_records_all = load_all_datasets(
         data_dir=Path(args.data_dir),
         subject_names=subject_list,
+        filter_method=args.filter_method,
+        include_execution=args.include_execution,
     )
 
     # 2. Stratified Train / Test Split

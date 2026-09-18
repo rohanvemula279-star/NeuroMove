@@ -36,11 +36,20 @@ CLEAN_64_CHANNELS = [
 
 def normalize_subject_id(subject: Union[int, str]) -> str:
     """Normalize subject identifier to PhysioNet format: 'S001', 'S002', etc.
+    Handles inputs like 1, '1', 'S001', 's1', 'Person-1', 'person-2', 'P1'.
     """
     if isinstance(subject, int):
         return f"S{subject:03d}"
     s = str(subject).strip()
-    if s.upper().startswith("S"):
+    s_upper = s.upper()
+    if s_upper.startswith("PERSON-") or s_upper.startswith("PERSON"):
+        parts = s.split("-") if "-" in s else s.split()
+        num = int(parts[-1])
+        return f"S{num:03d}"
+    if s_upper.startswith("P") and s_upper[1:].isdigit():
+        num = int(s_upper[1:])
+        return f"S{num:03d}"
+    if s_upper.startswith("S"):
         num = int(s[1:])
         return f"S{num:03d}"
     return f"S{int(s):03d}"
@@ -59,9 +68,23 @@ class PhysioNetLoader:
     and synthetic EEG generation for testing.
     """
 
+    # Real motor execution runs (left/right fist vs both fists/feet)
+    EXEC_RUNS_FISTS = [3, 7, 11]     # T1=left fist (0), T2=right fist (1)
+    EXEC_RUNS_FEET = [5, 9, 13]      # T1=both fists (2), T2=both feet (3)
+    ALL_EXEC_RUNS = [3, 5, 7, 9, 11, 13]
+
+    # Motor imagery runs (paper primary protocol)
     MI_RUNS_FISTS = [4, 8, 12]       # T1=left fist (0), T2=right fist (1)
     MI_RUNS_FEET = [6, 10, 14]       # T1=both fists (2), T2=both feet (3)
     ALL_MI_RUNS = [4, 6, 8, 10, 12, 14]
+
+    # Combined all motor task runs (execution + imagery)
+    ALL_TASK_FISTS = [3, 4, 7, 8, 11, 12]
+    ALL_TASK_FEET = [5, 6, 9, 10, 13, 14]
+    ALL_TASK_RUNS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+    # Baseline-only runs (R01 = eyes open, R02 = eyes closed, no task labels)
+    BASELINE_RUNS = [1, 2]
 
     def __init__(self, data_dir: Optional[Union[str, Path]] = None):
         if data_dir:
@@ -192,9 +215,10 @@ class PhysioNetLoader:
         trials = []
         raw_data = raw.get_data()  # shape (channels, total_samples)
 
-        # Mapping to class 0..3
-        # In runs 4, 8, 12: T1 -> left fist (0), T2 -> right fist (1)
-        # In runs 6, 10, 14: T1 -> both fists (2), T2 -> both feet (3)
+        # Mapping to 4 classes (0..3):
+        # Runs 03, 07, 11 (execution) & 04, 08, 12 (imagery): T1 -> Left Fist (0), T2 -> Right Fist (1)
+        # Runs 05, 09, 13 (execution) & 06, 10, 14 (imagery): T1 -> Both Fists (2), T2 -> Both Feet (3)
+        # Baseline runs (R01, R02) and rest interval (T0) are discarded
         for ev in events:
             time_sample = ev[0]
             ev_id = ev[2]
@@ -210,12 +234,12 @@ class PhysioNetLoader:
                 continue
 
             target_class = -1
-            if run in self.MI_RUNS_FISTS:
+            if run in self.ALL_TASK_FISTS:
                 if ann_label == "T1":
                     target_class = 0
                 elif ann_label == "T2":
                     target_class = 1
-            elif run in self.MI_RUNS_FEET:
+            elif run in self.ALL_TASK_FEET:
                 if ann_label == "T1":
                     target_class = 2
                 elif ann_label == "T2":
@@ -238,11 +262,20 @@ class PhysioNetLoader:
     def load_subject_trials(
         self,
         subject_id: str,
+        runs: Optional[List[int]] = None,
+        include_execution: bool = False,
         download_if_missing: bool = False,
         return_summary: bool = False,
     ) -> Union[List[Tuple[np.ndarray, int, List[str]]], Tuple[List[Tuple[np.ndarray, int, List[str]]], Dict[str, Any]]]:
-        """Load all available MI runs for a given subject.
-        Returns list of (trial_data_64xT, class_label, channel_names) and optional summary dict.
+        """Load available motor runs for a given subject.
+        
+        Args:
+            subject_id: Subject identifier ('S001', 'Person-1', 1, etc.)
+            runs: Optional explicit list of runs (e.g. [4, 6, 8, 10, 12, 14])
+            include_execution: If True and runs is None, loads all 12 motor runs (R03-R14, ~180 trials).
+                               If False and runs is None, loads 6 motor imagery runs (R04,06,08,10,12,14 per paper, ~90 trials).
+            download_if_missing: Download missing runs via MNE if not found locally.
+            return_summary: Return tuple of (trials, summary_dict)
         """
         norm_sub = normalize_subject_id(subject_id)
         subject_trials = []
@@ -251,7 +284,9 @@ class PhysioNetLoader:
         runs_failed = []
         class_counts = {c: 0 for c in range(4)}
 
-        for run in self.ALL_MI_RUNS:
+        target_runs = runs if runs is not None else (self.ALL_TASK_RUNS if include_execution else self.ALL_MI_RUNS)
+
+        for run in target_runs:
             try:
                 raw = self.load_run_raw(norm_sub, run, download_if_missing=download_if_missing)
                 ch_names = raw.ch_names
