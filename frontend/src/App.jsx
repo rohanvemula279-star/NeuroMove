@@ -265,7 +265,7 @@ export default function App() {
                     onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
                     onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
                   >
-                    MiniRocket Classifier (95.80%)
+                    MiniRocket 5-Pair Classifier (97.41%)
                   </button>
                 </li>
                 <li>
@@ -275,7 +275,7 @@ export default function App() {
                     onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
                     onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
                   >
-                    EEGNet 4-Class (81.40%)
+                    Hybrid Spatio-Temporal CNN-LSTM (97.16%)
                   </button>
                 </li>
                 <li>

@@ -33,7 +33,7 @@ export default function SubjectLeaderboard({ leaderboardData, _metricsData }) {
       peakSubject = s;
     }
   });
-  const avgAcc = subjects.length > 0 ? (sumAcc / subjects.length) : 0.958;
+  const avgAcc = subjects.length > 0 ? (sumAcc / subjects.length) : 0.9744;
 
   const chartData = subjects.map((sub) => {
     const acc = sub.minirocket_accuracy ? +(sub.minirocket_accuracy * 100).toFixed(2) : 0;

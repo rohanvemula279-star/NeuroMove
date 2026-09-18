@@ -66,11 +66,12 @@ def test_cnn_lstm_learns_synthetic_pattern():
     X = np.array(X_list, dtype=np.float32)
     y = np.array(y_list, dtype=np.int64)
 
-    # Train CNN-LSTM for 35 epochs with lr=2e-3
+    # Train CNN-LSTM for 35 epochs with lr=2e-3 and zero regularization for toy synthetic signal
     model = CNNLSTMModel(
         input_length=seq_len,
         n_classes=4,
         learning_rate=2e-3,
+        l2_reg=0.0,
         batch_size=16,
         epochs=35,
     )

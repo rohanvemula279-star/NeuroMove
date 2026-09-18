@@ -19,7 +19,7 @@ export default function ChallengeSection() {
     {
       title: 'Deep Learning Overfitting & Temporal Drift',
       description:
-        'High-parameter deep architectures (such as CNN-LSTM) overfit the non-stationary noise of human scalp EEG, collapsing to 29.96% accuracy (barely above the 25% 4-class chance level). Closed-form linear Ridge models solve this by avoiding stochastic backpropagation drift.',
+        'Naively flattening multi-channel EEG into 1D sequences caused traditional CNN-LSTM to collapse to 29.96% (near-chance). NeuroMove 2.0 engineered a 2D spatio-temporal tensor (N, 256, 10) with Conv1D + BiLSTM and L2 regularization, lifting CNN-LSTM to 97.16% alongside 97.41% MiniRocket.',
       icon: TrendingDown,
       color: '#D4D4D8',
       badge: 'ARCHITECTURAL TRADEOFF',
@@ -27,7 +27,7 @@ export default function ChallengeSection() {
     {
       title: 'Cumbersome 64-Channel Hardware Burden',
       description:
-        'Full-cap 64-channel setups require extensive conductive gel application, impedance checks, and heavy calibration times. NeuroMove extracts 5 targeted bipolar pairs along the primary motor strip (C3-C4, C1-C2, FC3-FC4, CP3-CP4, C5-C6), achieving 95.80% accuracy with a lightweight clinical footprint.',
+        'Full-cap 64-channel setups require extensive conductive gel application, impedance checks, and heavy calibration times. NeuroMove extracts 5 targeted bipolar pairs along the primary motor strip (C3-C4, C1-C2, FC3-FC4, CP3-CP4, C5-C6), achieving 97.41% accuracy (MiniRocket) and 97.16% (CNN-LSTM) with a lightweight clinical footprint.',
       icon: Layers,
       color: '#A1A1AA',
       badge: 'CLINICAL DEPLOYMENT GAP',

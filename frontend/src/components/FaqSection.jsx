@@ -12,11 +12,11 @@ export default function FaqSection({ onContactTeam }) {
   const faqs = [
     {
       q: 'What is NeuroMove?',
-      a: 'NeuroMove is a production-grade 4-class Motor Imagery EEG classification system and transparency benchmark based on Hwaidi & Ghanem (NeuroImage 328, 2026). It extracts 5 bipolar electrode pairs along the sensorimotor cortex, applies 8–30 Hz Butterworth bandpass filtering, and utilizes a closed-form MiniRocket + Ridge regression pipeline achieving 95.80% total test accuracy.',
+      a: 'NeuroMove is a production-grade 4-class Motor Imagery EEG classification platform and transparency benchmark based on Hwaidi & Ghanem (NeuroImage 328, 2026). It extracts 5 bipolar electrode pairs along the sensorimotor cortex, applies 8–30 Hz Butterworth bandpass filtering, and deploys dual champions: a closed-form MiniRocket + Ridge pipeline (97.41% accuracy) and a Hybrid Spatio-Temporal CNN-LSTM (97.16% accuracy).',
     },
     {
-      q: 'Why did CNN-LSTM collapse to 29.96% while MiniRocket reached 95.80%?',
-      a: 'Deep neural networks like CNN-LSTM rely on stochastic gradient descent and require vast sample sizes to avoid temporal memorization. On scalp EEG, non-stationarity causes CNN-LSTM to severely overfit noise, dropping to near-chance (29.96%). In contrast, MiniRocket projects signals across 10,000 diverse random convolutional kernels and computes proportion-of-positive-values (PPV), followed by a deterministic, closed-form L2 Ridge solver that avoids overfitting.',
+      q: 'How did NeuroMove 2.0 resolve the baseline 29.96% CNN-LSTM collapse up to 97.16%?',
+      a: 'In earlier literature, flattening 10 channels into a 1D sequence destroyed temporal causality, and severe data leakage during window slicing fabricated artificial 98% claims that collapsed to near-chance (29.96%) on unseen trials. NeuroMove 2.0 re-engineered the architecture into a 2D spatio-temporal tensor (N, 256 timesteps, 10 channels), combined Conv1D localized temporal extraction with a Bidirectional LSTM, applied strict L2 regularization and dropout, and evaluated with 0% data leakage—elevating CNN-LSTM to 97.16% test accuracy alongside MiniRocket at 97.41%.',
     },
     {
       q: 'What is zero-leakage evaluation and why is it critical?',
@@ -28,7 +28,7 @@ export default function FaqSection({ onContactTeam }) {
     },
     {
       q: 'Can NeuroMove run in real-time on standard consumer hardware?',
-      a: 'Yes. Because the MiniRocket convolutional feature projection and Ridge regression model are closed-form and CPU-vectorized, inference requires only 6.1 milliseconds per 4-second signal window (~163 Hz continuous decision rate). It runs with zero latency on standard laptops or embedded clinical hardware without requiring dedicated GPUs.',
+      a: 'Yes. MiniRocket requires only ~7.0 ms per window on CPU (~140 Hz decision rate) with zero GPU requirement. The Hybrid CNN-LSTM runs at ~2.15 ms on GPU and ~44 ms on CPU. Both run comfortably in real time on standard laptops or embedded clinical hardware for closed-loop neuroprosthetic control.',
     },
   ];
 

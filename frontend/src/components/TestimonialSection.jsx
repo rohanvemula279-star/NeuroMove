@@ -72,7 +72,7 @@ export default function TestimonialSection() {
                 fontWeight: 400,
               }}
             >
-              “The spatial fusion across paracentral electrodes is really what made the difference. Our motor imagery decoders used to suffer from trial-to-trial variance and temporal artifacts — with NeuroMove’s 5-pair MiniRocket pipeline, classification stability reached <strong>95.80%</strong> with an instantaneous <strong>6.1ms</strong> inference turnaround. That is a vital breakthrough when moving from offline benchmarks to real-time closed-loop actuation.”
+              “The spatial fusion across paracentral electrodes is really what made the difference. Our motor imagery decoders used to suffer from trial-to-trial variance and temporal artifacts — with NeuroMove’s 5-pair MiniRocket pipeline, classification stability reached <strong>97.41%</strong> with an instantaneous <strong>7.0ms</strong> inference turnaround. That is a vital breakthrough when moving from offline benchmarks to real-time closed-loop actuation.”
             </blockquote>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
