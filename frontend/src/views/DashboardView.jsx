@@ -10,6 +10,7 @@ import RocChart from '../components/RocChart';
 import ClassBreakdownChart from '../components/ClassBreakdownChart';
 import TestimonialSection from '../components/TestimonialSection';
 import CaseStudySection from '../components/CaseStudySection';
+import TeamSection from '../components/TeamSection';
 import FinalCtaSection from '../components/FinalCtaSection';
 
 // Creative UI Components
@@ -260,7 +261,12 @@ export default function DashboardView({
       {/* 14. Case Study Highlight: S002 Cohort (97.59% Acc) */}
       <CaseStudySection onExploreLeaderboard={onExploreLeaderboard} />
 
-      {/* 15. Final CTA Banner */}
+      {/* 15. Core Research Team & Codebase Contributors */}
+      <ScrollReveal animation="fade-up">
+        <TeamSection />
+      </ScrollReveal>
+
+      {/* 16. Final CTA Banner */}
       <FinalCtaSection onLaunchLive={onLaunchLive} onContactTeam={onExploreExplainer} />
     </div>
   );

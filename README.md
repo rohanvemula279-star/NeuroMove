@@ -310,6 +310,22 @@ All 29 unit tests enforce:
 
 ---
 
+## 👥 Contributors & Research Team
+
+NeuroMove 2.0 is developed and maintained by the research team:
+
+| Contributor | Role & Domain | Primary Modules & Code Contributions | GitHub |
+| :--- | :--- | :--- | :---: |
+| **Rohan Vemula** | Project Lead & System Architect | • Core 2.0 system architecture & PhysioNet 5-subject benchmark protocol<br/>• Zero-leakage continuous trial CV framework ([`scripts/train_v2.py`](scripts/train_v2.py))<br/>• Automated 29-test verification harness & end-to-end integration | [![GitHub](https://img.shields.io/badge/GitHub-rohanvemula279--star-181717?style=flat&logo=github)](https://github.com/rohanvemula279-star) |
+| **Sudhasri A** | ML Engineer (Spatial Fusion & MiniRocket) | • 5-pair motor cortex MiniRocket spatial fusion pipeline ([`app/models/minirocket_pipeline.py`](app/models/minirocket_pipeline.py))<br/>• 10,000 PPV kernel transform with sub-10ms (7.06ms) inference latency<br/>• Closed-form `RidgeClassifierCV` (97.41% accuracy) & ablation benchmarks | [![GitHub](https://img.shields.io/badge/GitHub-SudhasriA-181717?style=flat&logo=github)](https://github.com/SudhasriA) |
+| **Nakshathra V** | Deep Learning Architect (CNN-LSTM) | • Hybrid spatio-temporal deep neural network ([`app/models/cnn_lstm.py`](app/models/cnn_lstm.py))<br/>• Multi-scale 1D convolutions + 128-unit Bidirectional LSTM (97.16% accuracy)<br/>• Dynamic `ReduceLROnPlateau` scheduler & deep learning verification ([`tests/test_cnn_lstm.py`](tests/test_cnn_lstm.py)) | [![GitHub](https://img.shields.io/badge/GitHub-nakshathrav2007--hash-181717?style=flat&logo=github)](https://github.com/nakshathrav2007-hash) |
+| **Akshitha Reddy** | Biomedical Signal Processing Specialist | • Zero-phase 4th-order Butterworth bandpass filter (8–30 Hz $\mu/\beta$ rhythm) ([`app/data/preprocessing.py`](app/data/preprocessing.py))<br/>• Common Average Referencing (CAR) & anti-aliasing resampling (160 Hz $\rightarrow$ 128 Hz)<br/>• Multi-format ingestion (`.edf`, `.npy`, `.npz`, `.csv`) & DSP test suite ([`tests/test_preprocessing.py`](tests/test_preprocessing.py)) | [![GitHub](https://img.shields.io/badge/GitHub-akshithareddy025--jpg-181717?style=flat&logo=github)](https://github.com/akshithareddy025-jpg) |
+| **Sahasra Marikanti** | Full-Stack BCI Systems & Visualization | • Real-time FastAPI 2.0 streaming telemetry engine & WebSockets ([`app/routers/stream.py`](app/routers/stream.py))<br/>• Sentinel scientific React UI with live dual-waveform oscilloscope ([`frontend/src/`](frontend/src/))<br/>• Interactive 4-class confusion matrix heatmaps & multi-class ROC-AUC charts | [![GitHub](https://img.shields.io/badge/GitHub-sahasramarikanti--cpu-181717?style=flat&logo=github)](https://github.com/sahasramarikanti-cpu) |
+
+> 📄 For an in-depth breakdown of code responsibilities and module mapping, see [**`CONTRIBUTORS.md`**](CONTRIBUTORS.md).
+
+---
+
 ## Citation & Academic Acknowledgements
 
 ```bibtex

@@ -326,7 +326,81 @@ export default function App() {
               </ul>
             </div>
 
-            {/* Col 4: Citations & Open Source */}
+            {/* Col 4: Contributors */}
+            <div>
+              <div style={{ color: '#FFFFFF', fontWeight: 600, fontSize: '0.88rem', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Core Contributors
+              </div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
+                <li>
+                  <a
+                    href="https://github.com/rohanvemula279-star"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--text-tertiary)', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
+                  >
+                    <span>Rohan Vemula</span>
+                    <span className="mono" style={{ fontSize: '0.68rem', color: '#10B981' }}>Lead Architect</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/SudhasriA"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--text-tertiary)', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
+                  >
+                    <span>Sudhasri A</span>
+                    <span className="mono" style={{ fontSize: '0.68rem', color: '#34D399' }}>MiniRocket ML</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/nakshathrav2007-hash"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--text-tertiary)', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
+                  >
+                    <span>Nakshathra V</span>
+                    <span className="mono" style={{ fontSize: '0.68rem', color: '#38BDF8' }}>CNN-LSTM DL</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/akshithareddy025-jpg"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--text-tertiary)', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
+                  >
+                    <span>Akshitha Reddy</span>
+                    <span className="mono" style={{ fontSize: '0.68rem', color: '#F59E0B' }}>EEG DSP</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/sahasramarikanti-cpu"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--text-tertiary)', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
+                  >
+                    <span>Sahasra Marikanti</span>
+                    <span className="mono" style={{ fontSize: '0.68rem', color: '#A855F7' }}>FastAPI & UI</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 5: Citations & Open Source */}
             <div>
               <div style={{ color: '#FFFFFF', fontWeight: 600, fontSize: '0.88rem', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Academic Citations
